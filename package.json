@@ -1,0 +1,73 @@
+{
+  "name": "nodetsexpressreactsequelizecrud",
+  "version": "1.0.0",
+  "description": "",
+  "//private": "Must be true to use npm workspaces — prevents accidental publish of the monorepo root",
+  "private": true,
+  "//workspaces": "Declares the two workspace packages",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "//dev": "Starts backend and frontend in parallel using concurrently — single command for full-stack dev",
+    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "//build": "Builds backend first, then frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "//start": "Runs the compiled backend server (requires a prior 'npm run build')",
+    "start": "npm run start -w backend",
+    "//test": "Runs both workspace test suites in parallel via concurrently",
+    "test": "concurrently \"npm run test -w backend\" \"npm run test -w frontend\"",
+    "//lint": "Explicit --config avoids a jiti auto-discovery issue where the root tsconfig.json causes a TypeScript project-service conflict with workspace tsconfigs",
+    "lint": "eslint --config ./eslint.config.ts frontend/src backend/src",
+    "lint:backend": "eslint --config ./eslint.config.ts backend/src",
+    "lint:frontend": "eslint --config ./eslint.config.ts frontend/src",
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD/issues"
+  },
+  "homepage": "https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD#readme",
+  "overrides": {
+    "shell-quote": "^1.8.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.10.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^10.4.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.4.2",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.59.2"
+  },
+  "//lint-staged": "Runs on git staged files — ESLint fixes TypeScript, Prettier formats everything",
+  "lint-staged": {
+    "frontend/src/**/*.{ts,tsx}": [
+      "eslint --config ./eslint.config.ts --fix",
+      "prettier --write"
+    ],
+    "backend/src/**/*.ts": [
+      "eslint --config ./eslint.config.ts --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

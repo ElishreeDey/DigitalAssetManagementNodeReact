@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    volumes:
+      # Bind mount to Windows drive — data persists across Docker reinstalls
+      - ./pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    # No source bind mounts in production — image is self-contained
+    volumes: []
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    ports:
+      - "8080:80"
+    # No source bind mounts in production
+    volumes: []
