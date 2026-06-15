@@ -9,7 +9,7 @@
  */
 
 import api from './api'
-import { AUTH_ENDPOINTS } from '../constants/auth'
+import { AUTH_ENDPOINTS } from '../constants'
 
 export const authService = {
   async login(email: string, password: string): Promise<void> {

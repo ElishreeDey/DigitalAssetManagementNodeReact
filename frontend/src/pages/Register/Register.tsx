@@ -8,9 +8,8 @@
  ****************************************************************************************************************************
  */
 
-import { useRegisterForm } from '../../hooks/useRegisterForm'
-import EyeIcon from '../../components/icons/EyeIcon'
-import EyeOffIcon from '../../components/icons/EyeOffIcon'
+import { useRegisterForm } from '../../hooks'
+import { EyeIcon, EyeOffIcon } from '../../components/icons'
 import './Register.css'
 
 type RegisterProps = {

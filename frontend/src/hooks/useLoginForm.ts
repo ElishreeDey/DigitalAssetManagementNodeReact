@@ -11,14 +11,14 @@
 import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { authService } from '../services/authService'
-import { validateLoginForm } from '../utils/validation'
-import { AUTH_ERRORS, AUTH_TOAST } from '../constants/auth'
+import { authService } from '../services'
+import { validateLoginForm } from '../utils'
+import { AUTH_ERRORS, AUTH_TOAST } from '../constants'
 import type {
   LoginFormFields,
   LoginFormErrors,
   UseLoginFormReturn,
-} from '../types/auth'
+} from '../types'
 
 // Reset shape used when the form mounts and after a successful submission.
 const INITIAL_FIELDS: LoginFormFields = {

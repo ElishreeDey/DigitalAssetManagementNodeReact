@@ -8,9 +8,8 @@
  ****************************************************************************************************************************
  */
 
-import { useLoginForm } from '../../hooks/useLoginForm'
-import EyeIcon from '../../components/icons/EyeIcon'
-import EyeOffIcon from '../../components/icons/EyeOffIcon'
+import { useLoginForm } from '../../hooks'
+import { EyeIcon, EyeOffIcon } from '../../components/icons'
 import './Login.css'
 
 type LoginProps = {
@@ -116,7 +115,7 @@ export default function Login({
           </div>
 
           {/* Remember me + Forgot password */}
-          <div className="login-options">
+          {/* <div className="login-options">
             <label className="remember-me">
               <input
                 type="checkbox"
@@ -126,10 +125,10 @@ export default function Login({
               />
               Remember me
             </label>
-            <a href="#" className="forgot-link">
+             <a href="#" className="forgot-link">
               Forgot password?
-            </a>
-          </div>
+            </a> 
+          </div> */}
 
           {/* Submit */}
           <button type="submit" className="login-submit" disabled={isLoading}>

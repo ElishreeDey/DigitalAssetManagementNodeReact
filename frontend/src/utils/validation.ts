@@ -7,17 +7,13 @@
  ****************************************************************************************************************************
  */
 
-import {
-  EMAIL_REGEX,
-  PASSWORD_MIN_LENGTH,
-  AUTH_ERRORS,
-} from '../constants/auth'
+import { EMAIL_REGEX, PASSWORD_MIN_LENGTH, AUTH_ERRORS } from '../constants'
 import type {
   LoginFormFields,
   LoginFormErrors,
   RegisterFormFields,
   RegisterFormErrors,
-} from '../types/auth'
+} from '../types'
 
 export function validateLoginForm(fields: LoginFormFields): LoginFormErrors {
   const errors: LoginFormErrors = {}

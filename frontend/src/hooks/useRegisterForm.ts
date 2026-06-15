@@ -11,14 +11,14 @@
 import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { authService } from '../services/authService'
-import { validateRegisterForm } from '../utils/validation'
-import { AUTH_ERRORS, AUTH_TOAST } from '../constants/auth'
+import { authService } from '../services'
+import { validateRegisterForm } from '../utils'
+import { AUTH_ERRORS, AUTH_TOAST } from '../constants'
 import type {
   RegisterFormFields,
   RegisterFormErrors,
   UseRegisterFormReturn,
-} from '../types/auth'
+} from '../types'
 
 // Stable empty state — used on mount and to reset after success if needed.
 const INITIAL_FIELDS: RegisterFormFields = {
