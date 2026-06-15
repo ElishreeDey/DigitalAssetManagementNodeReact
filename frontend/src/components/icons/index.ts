@@ -7,5 +7,5 @@
  ****************************************************************************************************************************
  */
 
-export { default as EyeIcon } from './EyeIcon'
-export { default as EyeOffIcon } from './EyeOffIcon'
+// Eye toggle icons are static SVG assets — import directly from ../../assets/eye.svg
+// and ../../assets/eye-off.svg wherever the password-visibility toggle is used.

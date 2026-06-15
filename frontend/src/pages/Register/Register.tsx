@@ -9,7 +9,8 @@
  */
 
 import { useRegisterForm } from '../../hooks'
-import { EyeIcon, EyeOffIcon } from '../../components/icons'
+import eyeIcon from '../../assets/eye.svg'
+import eyeOffIcon from '../../assets/eye-off.svg'
 import './Register.css'
 
 type RegisterProps = {
@@ -106,7 +107,13 @@ export default function Register({
                 onClick={toggleShowPassword}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                <img
+                  src={showPassword ? eyeOffIcon : eyeIcon}
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="eye-icon"
+                />
               </button>
             </div>
             {errors.password && (
@@ -145,7 +152,13 @@ export default function Register({
                   showConfirmPassword ? 'Hide password' : 'Show password'
                 }
               >
-                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                <img
+                  src={showConfirmPassword ? eyeOffIcon : eyeIcon}
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="eye-icon"
+                />
               </button>
             </div>
             {errors.confirmPassword && (
