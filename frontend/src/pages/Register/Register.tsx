@@ -1,56 +1,58 @@
 /*
  ****************************************************************************************************************************
- * Filename    : Login
- * Description : Login page — pure UI component that renders the split-screen login form using the useLoginForm hook.
- *               Accepts navigation callbacks so App.tsx controls all view transitions.
+ * Filename    : Register
+ * Description : Register page — pure UI component that renders the sign-up form using the useRegisterForm hook.
+ *               On success it calls onRegisterSuccess() so App.tsx can switch the view to Login.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
 
-import { useLoginForm } from '../../hooks/useLoginForm'
+import { useRegisterForm } from '../../hooks/useRegisterForm'
 import EyeIcon from '../../components/icons/EyeIcon'
 import EyeOffIcon from '../../components/icons/EyeOffIcon'
-import './Login.css'
+import './Register.css'
 
-type LoginProps = {
-  onNavigateToRegister: () => void
-  onLoginSuccess: () => void
+type RegisterProps = {
+  onNavigateToLogin: () => void
+  onRegisterSuccess: () => void
 }
 
-export default function Login({
-  onNavigateToRegister,
-  onLoginSuccess,
-}: LoginProps) {
+export default function Register({
+  onNavigateToLogin,
+  onRegisterSuccess,
+}: RegisterProps) {
   const {
     fields,
     errors,
     showPassword,
+    showConfirmPassword,
     isLoading,
     serverError,
     handleChange,
     handleSubmit,
     toggleShowPassword,
-  } = useLoginForm(onLoginSuccess)
+    toggleShowConfirmPassword,
+  } = useRegisterForm(onRegisterSuccess)
 
   return (
     <div className="login-page">
       {/* Left branding panel */}
       <div className="login-brand">
         <h1 className="brand-headline">
-          Your assets, <span>organized.</span>
+          Get started <span>today.</span>
         </h1>
         <p className="brand-subline">
-          A single platform to store, search, and share all your digital assets
-          — images, videos, documents, and more.
+          Create your account to start managing your digital assets — images,
+          videos, documents, and more in one place.
         </p>
       </div>
 
       {/* Right form panel */}
       <main className="login-form-panel">
         <div className="login-form-header">
-          <h2>Welcome back</h2>
-          <p>Sign in to your Digital Asset Management to continue.</p>
+          <h2>Create account</h2>
+          <p>Fill in the details below to register for AssetVault.</p>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -73,10 +75,10 @@ export default function Login({
               value={fields.email}
               onChange={handleChange}
               className={`form-input${errors.email ? ' input-error' : ''}`}
-              aria-describedby={errors.email ? 'email-error' : undefined}
+              aria-describedby={errors.email ? 'reg-email-error' : undefined}
             />
             {errors.email && (
-              <span id="email-error" className="field-error" role="alert">
+              <span id="reg-email-error" className="field-error" role="alert">
                 ⚠ {errors.email}
               </span>
             )}
@@ -90,13 +92,13 @@ export default function Login({
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                placeholder="Enter your password"
+                autoComplete="new-password"
+                placeholder="Min. 6 characters"
                 value={fields.password}
                 onChange={handleChange}
                 className={`form-input password-input${errors.password ? ' input-error' : ''}`}
                 aria-describedby={
-                  errors.password ? 'password-error' : undefined
+                  errors.password ? 'reg-password-error' : undefined
                 }
               />
               <button
@@ -109,26 +111,49 @@ export default function Login({
               </button>
             </div>
             {errors.password && (
-              <span id="password-error" className="field-error" role="alert">
+              <span
+                id="reg-password-error"
+                className="field-error"
+                role="alert"
+              >
                 ⚠ {errors.password}
               </span>
             )}
           </div>
 
-          {/* Remember me + Forgot password */}
-          <div className="login-options">
-            <label className="remember-me">
+          {/* Confirm Password */}
+          <div className="form-field">
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <div className="input-wrapper">
               <input
-                type="checkbox"
-                name="rememberMe"
-                checked={fields.rememberMe}
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                placeholder="Re-enter your password"
+                value={fields.confirmPassword}
                 onChange={handleChange}
+                className={`form-input password-input${errors.confirmPassword ? ' input-error' : ''}`}
+                aria-describedby={
+                  errors.confirmPassword ? 'reg-confirm-error' : undefined
+                }
               />
-              Remember me
-            </label>
-            <a href="#" className="forgot-link">
-              Forgot password?
-            </a>
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={toggleShowConfirmPassword}
+                aria-label={
+                  showConfirmPassword ? 'Hide password' : 'Show password'
+                }
+              >
+                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <span id="reg-confirm-error" className="field-error" role="alert">
+                ⚠ {errors.confirmPassword}
+              </span>
+            )}
           </div>
 
           {/* Submit */}
@@ -136,23 +161,23 @@ export default function Login({
             {isLoading ? (
               <>
                 <span className="btn-spinner" />
-                Signing in…
+                Creating account…
               </>
             ) : (
-              'Sign in'
+              'Create account'
             )}
           </button>
         </form>
 
-        {/* Navigate to Register */}
+        {/* Navigate to Login */}
         <p className="auth-switch-text">
-          Don&apos;t have an account?{' '}
+          Already have an account?{' '}
           <button
             type="button"
             className="auth-switch-link"
-            onClick={onNavigateToRegister}
+            onClick={onNavigateToLogin}
           >
-            Create one
+            Sign in
           </button>
         </p>
       </main>

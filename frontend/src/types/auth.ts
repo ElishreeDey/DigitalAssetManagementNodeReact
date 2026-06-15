@@ -1,11 +1,15 @@
 /*
  ****************************************************************************************************************************
  * Filename    : auth
- * Description : This file holds all entry variable type
+ * Description : TypeScript types for all authentication forms and the hooks that drive them.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
+
+import type { ChangeEvent, SyntheticEvent } from 'react'
+
+/* ── Login ───────────────────────────────────────────────────────────────── */
 
 export type LoginFormFields = {
   email: string
@@ -18,8 +22,6 @@ export type LoginFormErrors = {
   password?: string
 }
 
-import type { ChangeEvent, SyntheticEvent } from 'react'
-
 export type UseLoginFormReturn = {
   fields: LoginFormFields
   errors: LoginFormErrors
@@ -29,4 +31,31 @@ export type UseLoginFormReturn = {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleSubmit: (e: SyntheticEvent<HTMLFormElement>) => Promise<void>
   toggleShowPassword: () => void
+}
+
+/* ── Register ────────────────────────────────────────────────────────────── */
+
+export type RegisterFormFields = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+export type RegisterFormErrors = {
+  email?: string
+  password?: string
+  confirmPassword?: string
+}
+
+export type UseRegisterFormReturn = {
+  fields: RegisterFormFields
+  errors: RegisterFormErrors
+  showPassword: boolean
+  showConfirmPassword: boolean
+  isLoading: boolean
+  serverError: string
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void
+  handleSubmit: (e: SyntheticEvent<HTMLFormElement>) => Promise<void>
+  toggleShowPassword: () => void
+  toggleShowConfirmPassword: () => void
 }

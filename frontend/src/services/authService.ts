@@ -1,18 +1,29 @@
 /*
  ****************************************************************************************************************************
  * Filename    : authService
- * Description : Authentication API service — handles login requests to the backend and manages auth tokens
+ * Description : Authentication API service — calls the backend login and register endpoints.
+ *               The JWT is handled entirely by the browser via httpOnly cookie; this layer never touches the token.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
 
-// import api from './api'   ← wire up when backend /auth/login is ready
+import api from './api'
+import { AUTH_ENDPOINTS } from '../constants/auth'
 
 export const authService = {
   async login(email: string, password: string): Promise<void> {
-    // TODO: swap with real call → api.post('/auth/login', { email, password })
-    await new Promise((r) => setTimeout(r, 1200))
-    console.log('Login submitted', { email, password })
+    // POST body carries credentials; on success the backend sets an httpOnly cookie.
+    await api.post(AUTH_ENDPOINTS.LOGIN, { email, password })
+  },
+
+  async register(email: string, password: string): Promise<void> {
+    // confirmPassword is validated client-side only; the backend only needs email + password.
+    await api.post(AUTH_ENDPOINTS.REGISTER, { email, password })
+  },
+
+  async logout(): Promise<void> {
+    // Tells the backend to clear the httpOnly cookie — client-side JS cannot clear it directly.
+    await api.post(AUTH_ENDPOINTS.LOGOUT)
   },
 }
