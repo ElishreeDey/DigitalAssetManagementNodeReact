@@ -19,7 +19,13 @@ services:
     build:
       context: ./frontend
       target: production
+      args:
+        # Relative URL — nginx proxies /api/v1/ to the backend container internally.
+        # Using a relative URL means no hardcoded hostname in the built JS bundle.
+        VITE_API_BASE_URL: /api/v1
     ports:
       - "8080:80"
     # No source bind mounts in production
     volumes: []
+    depends_on:
+      - backend
