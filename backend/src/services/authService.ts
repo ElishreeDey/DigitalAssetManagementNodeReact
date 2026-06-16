@@ -9,7 +9,7 @@
  */
 
 import bcrypt from 'bcrypt'
-import { SALT_ROUNDS } from '../constants/appConfig'
+import { SALT_ROUNDS } from '../constants'
 
 export const authService = {
   async hashPassword(plainPassword: string): Promise<string> {

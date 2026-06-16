@@ -10,6 +10,7 @@
 
 import api from './api'
 import { AUTH_ENDPOINTS } from '../constants'
+import type { AuthUser } from '../types'
 
 export const authService = {
   async login(email: string, password: string): Promise<void> {
@@ -25,5 +26,11 @@ export const authService = {
   async logout(): Promise<void> {
     // Tells the backend to clear the httpOnly cookie — client-side JS cannot clear it directly.
     await api.post(AUTH_ENDPOINTS.LOGOUT)
+  },
+
+  async curLoggedInUser(): Promise<AuthUser> {
+    // Reads user identity from the httpOnly cookie — no token handling needed in JS.
+    const res = await api.get<AuthUser>(AUTH_ENDPOINTS.ME)
+    return res.data
   },
 }

@@ -1,0 +1,6 @@
+export { default as damLogo } from './dam-logo.svg'
+export { default as assetsIcon } from './assets-icon.svg'
+export { default as uploadIcon } from './upload-icon.svg'
+export { default as collectionsIcon } from './collections-icon.svg'
+export { default as eyeIcon } from './eye.svg'
+export { default as eyeOffIcon } from './eye-off.svg'

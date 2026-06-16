@@ -10,8 +10,8 @@
 
 import jwt from 'jsonwebtoken'
 import { keys } from '../config/keys'
-import { JWT_EXPIRES_IN } from '../constants/appConfig'
-import type { JwtPayload } from '../types/authTypes'
+import { JWT_EXPIRES_IN } from '../constants'
+import type { JwtPayload } from '../types'
 
 export const generateToken = (payload: JwtPayload): string => {
   // expiresIn is sourced from appConfig so token lifetime is changed in one place.

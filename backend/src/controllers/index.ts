@@ -7,7 +7,7 @@
  ****************************************************************************************************************************
  */
 
-export { register, login, logout, getMe } from './authController'
+export { register, login, logout, curLoggedInUser } from './authController'
 export {
   createUser,
   getUsers,

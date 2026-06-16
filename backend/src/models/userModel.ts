@@ -8,7 +8,7 @@
  */
 
 import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config/db'
+import sequelize from '../config'
 
 class User extends Model {}
 

@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : authController
- * Description : Handles register, login, logout, and getMe endpoints.
+ * Description : Handles register, login, logout, and curLoggedInUser endpoints.
  *               Passwords are hashed with bcrypt; JWT is stored in an httpOnly cookie (never in the response body).
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
@@ -137,7 +137,7 @@ export const logout = (_req: Request, res: Response) => {
 }
 
 // GET /me  (requires authMiddleware)
-export const getMe = (req: Request, res: Response) => {
+export const curLoggedInUser = (req: Request, res: Response) => {
   // req.user is populated by authMiddleware after verifying the cookie token.
   res.status(200).json(req.user)
 }

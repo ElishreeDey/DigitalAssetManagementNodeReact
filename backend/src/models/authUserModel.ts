@@ -9,8 +9,8 @@
  */
 
 import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config/db'
-import type { UserRole } from '../types/authTypes'
+import sequelize from '../config'
+import type { UserRole } from '../types'
 
 export class AuthUser extends Model {
   declare id: string

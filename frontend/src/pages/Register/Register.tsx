@@ -9,8 +9,7 @@
  */
 
 import { useRegisterForm } from '../../hooks'
-import eyeIcon from '../../assets/eye.svg'
-import eyeOffIcon from '../../assets/eye-off.svg'
+import { eyeIcon, eyeOffIcon } from '../../assets'
 import './Register.css'
 
 type RegisterProps = {

@@ -8,8 +8,8 @@
  ****************************************************************************************************************************
  */
 
-import AuthUser from '../models/authUserModel'
-import type { UserRole } from '../types/authTypes'
+import { AuthUser } from '../models'
+import type { UserRole } from '../types'
 
 export class AuthUserRepository {
   async findByEmail(email: string) {

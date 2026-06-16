@@ -9,6 +9,16 @@
 
 import type { ChangeEvent, SyntheticEvent } from 'react'
 
+/* ── Authenticated user (returned by GET /me) ────────────────────────────── */
+
+export type UserRole = 'admin' | 'editor' | 'viewer'
+
+export type AuthUser = {
+  userId: string
+  email: string
+  role: UserRole
+}
+
 /* ── Login ───────────────────────────────────────────────────────────────── */
 
 export type LoginFormFields = {

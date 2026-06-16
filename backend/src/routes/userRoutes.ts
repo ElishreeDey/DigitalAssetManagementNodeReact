@@ -8,12 +8,12 @@
  */
 
 import express from 'express'
-import { authMiddleware } from '../middleware/authMiddleware'
+import { authMiddleware } from '../middleware'
 import {
   register,
   login,
   logout,
-  getMe,
+  curLoggedInUser,
   createUser,
   getUsers,
   getUserById,
@@ -32,7 +32,7 @@ router.post('/logout', logout)
 router.get('/verify', authMiddleware, (_req, res) =>
   res.status(200).json({ valid: true })
 )
-router.get('/me', authMiddleware, getMe)
+router.get('/me', authMiddleware, curLoggedInUser)
 
 // ── User CRUD (protected) ──────────────────────────────────────────────────
 router.post('/users', authMiddleware, createUser)

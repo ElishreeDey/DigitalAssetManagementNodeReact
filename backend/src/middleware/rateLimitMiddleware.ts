@@ -8,8 +8,8 @@
  */
 
 import rateLimit from 'express-rate-limit'
-import { MESSAGES } from '../constants/messages'
-import { keys } from '../config/keys'
+import { MESSAGES } from '../constants'
+import { keys } from '../config'
 
 export const apiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

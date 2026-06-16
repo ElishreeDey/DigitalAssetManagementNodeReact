@@ -9,7 +9,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-import { MESSAGES } from '../constants/messages'
+import { MESSAGES } from '../constants'
 
 export const errorMiddleware = (
   error: Error & { status?: number },

@@ -7,8 +7,8 @@
  ****************************************************************************************************************************
  */
 
-import User from '../models/userModel'
-import type { UserCreateBody, UserUpdateBody } from '../types/userTypes'
+import User from '../models'
+import type { UserCreateBody, UserUpdateBody } from '../types'
 
 export class UserRepository {
   async createUser(data: UserCreateBody) {

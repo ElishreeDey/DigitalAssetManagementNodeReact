@@ -9,9 +9,9 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-import { verifyToken } from '../helpers/authHelper'
-import { MESSAGES } from '../constants/messages'
-import { COOKIE_NAME } from '../constants/appConfig'
+import { verifyToken } from '../helpers'
+import { MESSAGES } from '../constants'
+import { COOKIE_NAME } from '../constants'
 
 export const authMiddleware = (
   req: Request,

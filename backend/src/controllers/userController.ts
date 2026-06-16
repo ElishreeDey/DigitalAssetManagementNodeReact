@@ -8,8 +8,8 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-import { UserService } from '../services/userService'
-import { MESSAGES } from '../constants/messages'
+import { UserService } from '../services'
+import { MESSAGES } from '../constants'
 
 const userService = new UserService()
 
