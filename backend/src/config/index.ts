@@ -9,3 +9,5 @@
 
 export { default } from './db'
 export { keys } from './keys'
+export { minioClient, BUCKET_NAME, ensureBucket } from './minio'
+export { getRabbitChannel, ASSET_QUEUE } from './rabbitmq'

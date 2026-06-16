@@ -42,4 +42,24 @@ export const MESSAGES = {
   DB_CON_SUCCESS_MSG: 'Database connected successfully',
   SERVER_RUNNING_ONPORT_MSG: 'Server running on port',
   RATE_LIMIT_EXCEED_MSG: 'Too many requests. Please try again later.',
+
+  // MinIO — startup
+  MINIO_BUCKET_CREATED_MSG: 'MinIO bucket created',
+  MINIO_BUCKET_EXISTS_MSG: 'MinIO bucket already exists',
+  MINIO_INIT_SKIPPED_MSG: 'MinIO bucket init skipped',
+
+  // MinIO — runtime errors
+  MINIO_UPLOAD_FAILED_MSG: 'Failed to upload file to object storage',
+  MINIO_STREAM_FAILED_MSG: 'Failed to stream file from object storage',
+  MINIO_DELETE_FAILED_MSG: 'Failed to delete file from object storage',
+
+  // RabbitMQ — startup
+  RABBITMQ_CONNECTED_MSG: 'RabbitMQ connected, queue ready',
+  RABBITMQ_CONNECTION_ERROR_MSG: 'RabbitMQ connection error',
+  RABBITMQ_PUBLISH_FAILED_MSG: 'Failed to publish job to queue',
+
+  // Worker
+  WORKER_STARTED_MSG: 'Asset worker started, listening for jobs',
+  WORKER_JOB_FAILED_MSG: 'Asset processing job failed',
+  WORKER_INVALID_MESSAGE_MSG: 'Invalid job message received, rejecting',
 } as const

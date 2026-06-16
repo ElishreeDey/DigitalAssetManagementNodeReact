@@ -39,3 +39,25 @@ export const CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
 /* ── API versioning ──────────────────────────────────────────────────────── */
 
 export const API_PREFIX = '/api/v1'
+
+/* ── MinIO ───────────────────────────────────────────────────────────────── */
+
+export const MINIO_BUCKET_REGION = 'us-east-1'
+
+/* ── RabbitMQ ────────────────────────────────────────────────────────────── */
+
+// Queue name is a shared constant so the API (publisher) and Worker (consumer)
+// always reference the same string without importing from each other.
+export const ASSET_QUEUE_NAME = 'asset-processing'
+
+/* ── File upload ─────────────────────────────────────────────────────────── */
+
+export const UPLOAD_MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
+export const UPLOAD_MAX_FILES = 20
+export const UPLOAD_ACCEPTED_MIME_REGEX = /^(image|video)\//
+
+/* ── Thumbnail generation ────────────────────────────────────────────────── */
+
+export const THUMBNAIL_WIDTH = 400
+export const THUMBNAIL_HEIGHT = 400
+export const THUMBNAIL_QUALITY = 80 // JPEG quality 0-100

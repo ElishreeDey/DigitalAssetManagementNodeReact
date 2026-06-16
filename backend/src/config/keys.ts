@@ -42,4 +42,15 @@ export const keys = {
     password: process.env.DB_PASSWORD as string,
     name: process.env.DB_NAME as string,
   },
+  minio: {
+    endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+    port: Number(process.env.MINIO_PORT) || 9000,
+    accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
+    secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
+    bucket: process.env.MINIO_BUCKET || 'dam-assets',
+    useSSL: process.env.MINIO_USE_SSL === 'true',
+  },
+  rabbitmq: {
+    url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+  },
 }
