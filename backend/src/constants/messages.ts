@@ -67,4 +67,14 @@ export const MESSAGES = {
   VIDEO_PROBE_FAILED_MSG: 'Failed to read video metadata',
   VIDEO_TRANSCODE_FAILED_MSG: 'Failed to transcode video',
   VIDEO_THUMBNAIL_FAILED_MSG: 'Failed to generate video thumbnail',
+
+  // Asset CRUD
+  ASSET_NOT_FOUND_MSG: 'Asset not found',
+  ASSET_NO_FILES_MSG: 'No files were uploaded',
+  ASSET_INVALID_TYPE_MSG: 'Only image and video files are accepted',
+  ASSET_UPLOAD_FAILED_MSG: 'Failed to upload asset',
+  ASSET_LIST_FAILED_MSG: 'Failed to fetch assets',
+  ASSET_DELETE_FAILED_MSG: 'Failed to delete asset',
+  ASSET_DELETE_SUCCESS_MSG: 'Asset deleted successfully',
+  ASSET_STREAM_FAILED_MSG: 'Failed to stream asset',
 } as const

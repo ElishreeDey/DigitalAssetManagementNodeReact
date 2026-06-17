@@ -14,7 +14,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 
-import sequelize, { keys } from './config'
+import sequelize, { keys, ensureBucket } from './config'
 import router from './routes'
 import { apiRateLimiter, errorMiddleware } from './middleware'
 import {
@@ -49,8 +49,15 @@ app.use(errorMiddleware)
 
 sequelize
   .sync()
-  .then(() => {
+  .then(async () => {
     console.log(MESSAGES.DB_CON_SUCCESS_MSG)
+
+    // The API needs the bucket to exist before it can accept the first upload.
+    // Failure here doesn't crash the API — MinIO may just not be up yet in local dev.
+    await ensureBucket().catch((err: unknown) =>
+      console.warn('[MinIO] Bucket init skipped:', (err as Error).message)
+    )
+
     const server = app.listen(keys.port, () => {
       console.log(`${MESSAGES.SERVER_RUNNING_ONPORT_MSG} ${keys.port}`)
     })
