@@ -9,3 +9,11 @@
 
 export { UserService } from './userService'
 export { authService } from './authService'
+export {
+  generateStoredName,
+  uploadToMinio,
+  uploadThumbnailToMinio,
+  streamFromMinio,
+  deleteFromMinio,
+  generateTags,
+} from './assetService'
