@@ -13,7 +13,16 @@ export {
   generateStoredName,
   uploadToMinio,
   uploadThumbnailToMinio,
+  uploadRenditionToMinio,
   streamFromMinio,
   deleteFromMinio,
   generateTags,
 } from './assetService'
+export {
+  writeBufferToTempFile,
+  tempOutputPath,
+  cleanupFiles,
+  getVideoMetadata,
+  transcodeVideo,
+  generateVideoThumbnail,
+} from './videoService'

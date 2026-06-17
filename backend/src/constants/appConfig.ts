@@ -61,3 +61,16 @@ export const UPLOAD_ACCEPTED_MIME_REGEX = /^(image|video)\//
 export const THUMBNAIL_WIDTH = 400
 export const THUMBNAIL_HEIGHT = 400
 export const THUMBNAIL_QUALITY = 80 // JPEG quality 0-100
+
+/* ── Video transcoding ───────────────────────────────────────────────────── */
+
+// Renditions the worker generates for every uploaded video. Heights only — width is
+// derived by ffmpeg via "-2" to preserve the source aspect ratio.
+// A rendition is skipped if the source video is shorter (no upscaling).
+export const VIDEO_RESOLUTIONS: { label: string; height: number }[] = [
+  { label: '1080p', height: 1080 },
+  { label: '720p', height: 720 },
+]
+
+// Timestamp (seconds into the video) used to capture the thumbnail frame
+export const VIDEO_THUMBNAIL_TIMESTAMP_SEC = 1

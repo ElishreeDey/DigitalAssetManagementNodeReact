@@ -17,7 +17,7 @@ import {
   CreationOptional,
 } from 'sequelize'
 import sequelize from '../config'
-import type { AssetStatus } from '../types'
+import type { AssetStatus, VideoRendition } from '../types'
 
 export class Asset extends Model<
   InferAttributes<Asset>,
@@ -42,6 +42,7 @@ export class Asset extends Model<
   declare tags: string[] // auto-generated: category, type, size label, filename keywords
   declare width: number | null // pixel width  (images/videos only)
   declare height: number | null // pixel height (images/videos only)
+  declare renditions: CreationOptional<VideoRendition[]> // transcoded 1080p/720p variants — videos only
 
   // Lifecycle
   declare status: AssetStatus // pending → processing → ready | failed
@@ -97,6 +98,12 @@ Asset.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: null,
+    },
+    renditions: {
+      // JSONB stores the array of { label, bucketPath } objects — no join table needed
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [],
     },
     status: {
       type: DataTypes.ENUM('pending', 'processing', 'ready', 'failed'),

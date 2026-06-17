@@ -78,6 +78,33 @@ export async function uploadThumbnailToMinio(
   }
 }
 
+// Uploads a transcoded video rendition (e.g. 1080p/720p variant) produced by the worker.
+// Renditions are stored under a 'renditions/' prefix, separate from originals and thumbnails.
+export async function uploadRenditionToMinio(
+  buffer: Buffer,
+  assetId: string,
+  label: string
+): Promise<string> {
+  const renditionName = `renditions/${assetId}-${label}.mp4`
+  try {
+    await minioClient.putObject(
+      BUCKET_NAME,
+      renditionName,
+      buffer,
+      buffer.length,
+      {
+        'Content-Type': 'video/mp4',
+      }
+    )
+    return renditionName
+  } catch (err) {
+    throw new Error(
+      `${MESSAGES.MINIO_UPLOAD_FAILED_MSG}: ${(err as Error).message}`,
+      { cause: err }
+    )
+  }
+}
+
 // ─── MinIO stream ─────────────────────────────────────────────────────────────
 
 // Returns a readable stream for a stored object — used by view/download endpoints.

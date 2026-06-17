@@ -15,4 +15,5 @@ export type {
   AssetCreateData,
   AssetProcessingResult,
   AssetListQuery,
+  VideoRendition,
 } from './assetTypes'

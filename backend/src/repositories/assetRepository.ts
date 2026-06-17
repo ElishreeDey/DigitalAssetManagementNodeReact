@@ -70,6 +70,7 @@ export class AssetRepository {
         thumbnailPath: result.thumbnailPath,
         width: result.width ?? null,
         height: result.height ?? null,
+        renditions: result.renditions ?? [],
       },
       { where: { id } }
     )

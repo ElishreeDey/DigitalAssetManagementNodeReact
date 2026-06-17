@@ -62,4 +62,9 @@ export const MESSAGES = {
   WORKER_STARTED_MSG: 'Asset worker started, listening for jobs',
   WORKER_JOB_FAILED_MSG: 'Asset processing job failed',
   WORKER_INVALID_MESSAGE_MSG: 'Invalid job message received, rejecting',
+
+  // Video processing
+  VIDEO_PROBE_FAILED_MSG: 'Failed to read video metadata',
+  VIDEO_TRANSCODE_FAILED_MSG: 'Failed to transcode video',
+  VIDEO_THUMBNAIL_FAILED_MSG: 'Failed to generate video thumbnail',
 } as const

@@ -31,12 +31,19 @@ export type AssetCreateData = {
   uploadedBy: string
 }
 
+// A single transcoded video variant stored in MinIO
+export type VideoRendition = {
+  label: string // e.g. '1080p', '720p'
+  bucketPath: string
+}
+
 // Fields the worker writes back once processing (thumbnail / transcoding) completes
 export type AssetProcessingResult = {
   thumbnailPath: string
   width: number | undefined
   height: number | undefined
   status: AssetStatus
+  renditions?: VideoRendition[] // populated for videos only
 }
 
 // Query parameters accepted by the list endpoint
