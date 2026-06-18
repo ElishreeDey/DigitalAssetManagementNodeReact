@@ -9,3 +9,4 @@
 
 export { UserRepository } from './userRepository'
 export { AuthUserRepository } from './authUserRepository'
+export { AssetRepository, assetRepository } from './assetRepository'

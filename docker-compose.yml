@@ -17,7 +17,42 @@ services:
       timeout: 5s
       retries: 5
 
-  # ─── Backend (Node.js / Express / Sequelize) ─────────────────────────────────
+  # ─── MinIO (object storage) ───────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"    # S3 API
+      - "9001:9001"    # Web console → http://localhost:9001
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── RabbitMQ (message queue) ─────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"    # AMQP — what the app connects to
+      - "15672:15672"  # Web console → http://localhost:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Backend (Node.js / Express / Sequelize) ──────────────────────────────────
   backend:
     build:
       context: ./backend
@@ -27,8 +62,10 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      # Override DB_HOST to point at the postgres service instead of the Windows host
+      # Override service hostnames to point at Docker service names
       DB_HOST: postgres
+      MINIO_ENDPOINT: minio
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     volumes:
       - ./backend:/app
       # Anonymous volume prevents Windows host node_modules from overwriting the container's Linux modules
@@ -37,8 +74,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      minio:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
-  # ─── Frontend (React / Vite) ─────────────────────────────────────────────────
+  # ─── Frontend (React / Vite) ──────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -55,3 +96,5 @@ services:
 
 volumes:
   postgres_data:
+  minio_data:
+  rabbitmq_data:

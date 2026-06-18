@@ -9,3 +9,11 @@
 
 export type { UserCreateBody, UserUpdateBody } from './userTypes'
 export type { UserRole, JwtPayload, RegisterBody, LoginBody } from './authTypes'
+export type {
+  AssetStatus,
+  AssetJobData,
+  AssetCreateData,
+  AssetProcessingResult,
+  AssetListQuery,
+  VideoRendition,
+} from './assetTypes'
