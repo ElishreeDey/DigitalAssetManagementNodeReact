@@ -9,3 +9,4 @@
  */
 
 export { authService } from './authService'
+export { assetService } from './assetService'

@@ -135,6 +135,9 @@ export const streamAsset = async (
     res.setHeader('Content-Type', asset.mimeType)
     res.setHeader('Content-Length', asset.size)
     res.setHeader('Cache-Control', 'private, max-age=3600')
+    // Helmet defaults this to 'same-origin', which silently blocks <img>/<video> tags
+    // from rendering the response when the frontend runs on a different origin/port.
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
@@ -159,6 +162,7 @@ export const streamThumbnail = async (
     const stream = await streamFromMinio(path)
     res.setHeader('Content-Type', mimeType)
     res.setHeader('Cache-Control', 'private, max-age=3600')
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
@@ -186,6 +190,7 @@ export const downloadAsset = async (
       'Content-Disposition',
       `attachment; filename="${encodeURIComponent(asset.originalName)}"`
     )
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
