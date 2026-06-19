@@ -152,15 +152,6 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             </h1>
             <p className="page-date">{today}</p>
           </div>
-          <div className="topbar-right">
-            <button
-              type="button"
-              className="btn-upload-cta"
-              onClick={() => setActiveNav('upload')}
-            >
-              + Upload
-            </button>
-          </div>
         </header>
 
         {/* Scrollable content area */}
