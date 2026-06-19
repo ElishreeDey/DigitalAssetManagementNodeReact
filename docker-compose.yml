@@ -79,6 +79,31 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  # ─── Worker (background asset processor — Sharp/FFmpeg) ──────────────────────
+  worker:
+    build:
+      context: ./backend
+      target: development
+    # Same image as backend, different entry point — no HTTP server, so no ports exposed
+    command: npm run worker:dev
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: postgres
+      MINIO_ENDPOINT: minio
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
   # ─── Frontend (React / Vite) ──────────────────────────────────────────────────
   frontend:
     build:
