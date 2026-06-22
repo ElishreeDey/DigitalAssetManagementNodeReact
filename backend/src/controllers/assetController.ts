@@ -110,7 +110,8 @@ export const listAssets = async (
 ) => {
   try {
     const query = req.query as AssetListQuery
-    const assets = await assetRepository.list(query)
+    // Scope results to the logged-in user so each account only sees its own uploads.
+    const assets = await assetRepository.list(query, req.user!.userId)
 
     res.status(200).json({ assets })
   } catch (error) {

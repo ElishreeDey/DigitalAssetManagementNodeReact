@@ -21,7 +21,7 @@ type DashboardProps = {
   onLogout: () => void
 }
 
-type NavKey = 'assets' | 'upload' | 'collections'
+type NavKey = 'assets' | 'upload' | 'teams'
 
 type NavItem = {
   key: NavKey
@@ -32,7 +32,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { key: 'assets', label: 'Assets', iconSrc: assetsIcon },
   { key: 'upload', label: 'Upload', iconSrc: uploadIcon },
-  { key: 'collections', label: 'Collections', iconSrc: collectionsIcon },
+  { key: 'teams', label: 'Teams', iconSrc: collectionsIcon },
 ]
 
 export default function Dashboard({ onLogout }: DashboardProps) {
@@ -166,9 +166,9 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             />
           )}
 
-          {activeNav === 'collections' && (
+          {activeNav === 'teams' && (
             <div className="coming-soon">
-              <p>Collections coming soon.</p>
+              <p>Teams coming soon.</p>
             </div>
           )}
         </main>

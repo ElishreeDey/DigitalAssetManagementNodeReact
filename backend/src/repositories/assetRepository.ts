@@ -25,12 +25,13 @@ export class AssetRepository {
     return Asset.findByPk(id)
   }
 
-  async list(query: AssetListQuery): Promise<Asset[]> {
+  async list(query: AssetListQuery, userId: string): Promise<Asset[]> {
     const page = Math.max(1, Number(query.page) || 1)
     const limit = Math.min(100, Number(query.limit) || 20) // Cap page size
     const offset = (page - 1) * limit
 
-    const where: Record<string, unknown> = {}
+    // Filter by uploader so users only ever see assets they uploaded themselves.
+    const where: Record<string, unknown> = { uploadedBy: userId }
 
     if (query.search) {
       where['originalName'] = { [Op.iLike]: `%${query.search}%` }
