@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : useAssets
- * Description : Fetches and auto-refreshes the asset gallery. Polls every 5s while any asset is still
- *               pending/processing so the gallery picks up worker-completed thumbnails without a manual refresh.
+ * Description : Asset gallery data hook.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
@@ -26,10 +25,13 @@ export function useAssets(search: string, typeFilter: string) {
         search: search || undefined,
         type: typeFilter !== 'all' ? typeFilter : undefined,
       })
+
       setAssets(data)
+
       hasPendingRef.current = data.some(
         (a) => a.status === 'pending' || a.status === 'processing'
       )
+
       setError(null)
     } catch {
       setError('Failed to load assets')
@@ -47,14 +49,14 @@ export function useAssets(search: string, typeFilter: string) {
     const interval = setInterval(() => {
       if (hasPendingRef.current) void fetchAssets()
     }, POLL_INTERVAL_MS)
+
     return () => clearInterval(interval)
   }, [fetchAssets])
 
   function addAssets(uploaded: AssetItem[]) {
     setAssets((prev) => [...uploaded, ...prev])
-    // Newly uploaded assets start as 'pending' — without this, the poll loop has
-    // no way to know there's now something to wait on, since it only inspects
-    // hasPendingRef, which is otherwise only updated inside fetchAssets().
+
+    // Ensure polling starts immediately for newly uploaded pending assets.
     if (
       uploaded.some((a) => a.status === 'pending' || a.status === 'processing')
     ) {

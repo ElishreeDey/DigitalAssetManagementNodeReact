@@ -1,10 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetController
- * Description : Express request handlers for the asset upload feature — upload, list, stream, download, delete.
- *               View/thumbnail/download are intentionally public (no authMiddleware): asset IDs are UUIDs,
- *               so they are unguessable, which lets <img src> and <video src> tags load them cross-origin
- *               without sending cookies. Upload/list/delete remain authenticated.
+ * Description : Express request handlers for asset upload, listing, streaming, download, and deletion.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
@@ -40,7 +37,7 @@ const multerUpload = multer({
   },
 })
 
-// Exported as middleware so the router can chain: authMiddleware → uploadMiddleware → uploadAssets
+// Exported as middleware so routes can chain authentication and file upload handling.
 export const uploadMiddleware = multerUpload.array('files', UPLOAD_MAX_FILES)
 
 export const uploadAssets = async (
@@ -54,15 +51,15 @@ export const uploadAssets = async (
       return res.status(400).json({ message: MESSAGES.ASSET_NO_FILES_MSG })
     }
 
-    // Publishing failures must not fail the upload — the file is already safely in
-    // MinIO and the DB; a lost queue message just means processing waits until the
-    // next manual retry, instead of the upload itself failing for the user.
+    // Upload succeeds even if queue publishing fails because the asset is already
+    // stored in MinIO and persisted in the database.
     const channel = await getRabbitChannel().catch(() => null)
 
     const assets = await Promise.all(
       files.map(async (file) => {
         const storedName = generateStoredName(file.originalname)
         const tags = generateTags(file.originalname, file.mimetype, file.size)
+
         const bucketPath = await uploadToMinio(
           file.buffer,
           storedName,
@@ -86,6 +83,7 @@ export const uploadAssets = async (
           originalName: file.originalname,
           size: file.size,
         }
+
         channel?.sendToQueue(
           ASSET_QUEUE,
           Buffer.from(JSON.stringify(jobData)),
@@ -113,6 +111,7 @@ export const listAssets = async (
   try {
     const query = req.query as AssetListQuery
     const assets = await assetRepository.list(query)
+
     res.status(200).json({ assets })
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_LIST_FAILED_MSG
@@ -120,7 +119,7 @@ export const listAssets = async (
   }
 }
 
-// Streams the original file — no auth guard so <img src> and <video src> work in the browser
+// Public endpoint to allow browser <img> and <video> tags to load assets directly.
 export const streamAsset = async (
   req: Request<IdParams>,
   res: Response,
@@ -128,16 +127,20 @@ export const streamAsset = async (
 ) => {
   try {
     const asset = await assetRepository.findById(req.params.id)
-    if (!asset)
+
+    if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
 
     const stream = await streamFromMinio(asset.bucketPath)
+
     res.setHeader('Content-Type', asset.mimeType)
     res.setHeader('Content-Length', asset.size)
     res.setHeader('Cache-Control', 'private, max-age=3600')
-    // Helmet defaults this to 'same-origin', which silently blocks <img>/<video> tags
-    // from rendering the response when the frontend runs on a different origin/port.
+
+    // Required for serving assets across different frontend origins.
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
@@ -145,7 +148,7 @@ export const streamAsset = async (
   }
 }
 
-// Streams the 400×400 thumbnail; falls back to the original for pending/failed assets
+// Falls back to the original asset when thumbnail generation is pending or failed.
 export const streamThumbnail = async (
   req: Request<IdParams>,
   res: Response,
@@ -153,16 +156,20 @@ export const streamThumbnail = async (
 ) => {
   try {
     const asset = await assetRepository.findById(req.params.id)
-    if (!asset)
+
+    if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
 
     const path = asset.thumbnailPath ?? asset.bucketPath
     const mimeType = asset.thumbnailPath ? 'image/jpeg' : asset.mimeType
 
     const stream = await streamFromMinio(path)
+
     res.setHeader('Content-Type', mimeType)
     res.setHeader('Cache-Control', 'private, max-age=3600')
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
@@ -170,7 +177,7 @@ export const streamThumbnail = async (
   }
 }
 
-// Same as streamAsset but adds Content-Disposition: attachment and tracks download counts
+// Downloads the original asset and increments its download count.
 export const downloadAsset = async (
   req: Request<IdParams>,
   res: Response,
@@ -178,12 +185,15 @@ export const downloadAsset = async (
 ) => {
   try {
     const asset = await assetRepository.findById(req.params.id)
-    if (!asset)
+
+    if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
 
     await assetRepository.incrementDownloadCount(asset.id)
 
     const stream = await streamFromMinio(asset.bucketPath)
+
     res.setHeader('Content-Type', asset.mimeType)
     res.setHeader('Content-Length', asset.size)
     res.setHeader(
@@ -191,6 +201,7 @@ export const downloadAsset = async (
       `attachment; filename="${encodeURIComponent(asset.originalName)}"`
     )
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+
     stream.pipe(res)
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_STREAM_FAILED_MSG
@@ -205,12 +216,17 @@ export const deleteAsset = async (
 ) => {
   try {
     const asset = await assetRepository.delete(req.params.id)
-    if (!asset)
+
+    if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
 
     await deleteFromMinio(asset.bucketPath).catch(() => null)
-    if (asset.thumbnailPath)
+
+    if (asset.thumbnailPath) {
       await deleteFromMinio(asset.thumbnailPath).catch(() => null)
+    }
+
     await Promise.all(
       asset.renditions.map((r) =>
         deleteFromMinio(r.bucketPath).catch(() => null)

@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetService
- * Description : API calls for the asset upload feature — upload, list, delete. Streaming endpoints
- *               (thumbnail/view/download) are not called here since they're used as raw <img>/<a> URLs.
+ * Description : API calls for asset management.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************

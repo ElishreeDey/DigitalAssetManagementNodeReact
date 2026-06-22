@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Register
- * Description : Register page — pure UI component that renders the sign-up form using the useRegisterForm hook.
- *               On success it calls onRegisterSuccess() so App.tsx can switch the view to Login.
+ * Description : Register page component for user account creation.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
@@ -78,7 +77,7 @@ export default function Register({
             />
             {errors.email && (
               <span id="reg-email-error" className="field-error" role="alert">
-                ⚠ {errors.email}
+                {errors.email}
               </span>
             )}
           </div>
@@ -121,7 +120,7 @@ export default function Register({
                 className="field-error"
                 role="alert"
               >
-                ⚠ {errors.password}
+                {errors.password}
               </span>
             )}
           </div>
@@ -162,7 +161,7 @@ export default function Register({
             </div>
             {errors.confirmPassword && (
               <span id="reg-confirm-error" className="field-error" role="alert">
-                ⚠ {errors.confirmPassword}
+                {errors.confirmPassword}
               </span>
             )}
           </div>

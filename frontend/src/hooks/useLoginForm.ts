@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : useLoginForm
- * Description : Custom React hook that owns all login form state, field validation, and API submission.
- *               The page component stays a pure UI layer — it never imports authService directly.
+ * Description : Login form state and submission hook.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
@@ -20,7 +19,6 @@ import type {
   UseLoginFormReturn,
 } from '../types'
 
-// Reset shape used when the form mounts and after a successful submission.
 const INITIAL_FIELDS: LoginFormFields = {
   email: '',
   password: '',
@@ -37,13 +35,12 @@ export function useLoginForm(onSuccess?: () => void): UseLoginFormReturn {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value, type, checked } = e.target
 
-    // Checkbox fields carry their value in `checked`, not `value`.
+    // Checkbox values come from `checked` instead of `value`.
     setFields((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
 
-    // Clear the inline error for this field as soon as the user starts correcting it.
     if (errors[name as keyof LoginFormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
@@ -53,7 +50,6 @@ export function useLoginForm(onSuccess?: () => void): UseLoginFormReturn {
     e.preventDefault()
     setServerError('')
 
-    // Run client-side validation first so we avoid an unnecessary network round-trip.
     const validationErrors = validateLoginForm(fields)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -61,17 +57,18 @@ export function useLoginForm(onSuccess?: () => void): UseLoginFormReturn {
     }
 
     setIsLoading(true)
+
     try {
       await authService.login(fields.email, fields.password)
       toast.success(AUTH_TOAST.LOGIN_SUCCESS)
       onSuccess?.()
     } catch (err) {
-      // Prefer the backend's message (e.g. "Invalid email or password") over the generic fallback
-      // so the user gets actionable feedback without us leaking internal details.
+      // Prefer API error messages when available.
       const message =
         axios.isAxiosError(err) && err.response?.data?.message
           ? (err.response.data.message as string)
           : AUTH_ERRORS.LOGIN_FAILED
+
       setServerError(message)
     } finally {
       setIsLoading(false)

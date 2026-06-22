@@ -9,8 +9,7 @@
 
 import type { ChangeEvent, SyntheticEvent } from 'react'
 
-/* ── Authenticated user (returned by GET /me) ────────────────────────────── */
-
+/* Authenticated user */
 export type UserRole = 'admin' | 'editor' | 'viewer'
 
 export type AuthUser = {
@@ -19,8 +18,7 @@ export type AuthUser = {
   role: UserRole
 }
 
-/* ── Login ───────────────────────────────────────────────────────────────── */
-
+/* Login */
 export type LoginFormFields = {
   email: string
   password: string
@@ -43,8 +41,7 @@ export type UseLoginFormReturn = {
   toggleShowPassword: () => void
 }
 
-/* ── Register ────────────────────────────────────────────────────────────── */
-
+/* Register */
 export type RegisterFormFields = {
   email: string
   password: string

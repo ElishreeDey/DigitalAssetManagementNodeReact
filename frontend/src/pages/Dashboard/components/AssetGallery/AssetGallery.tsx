@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : AssetGallery
- * Description : Grid view of uploaded assets with search, type filter, status badges, and per-card
- *               preview/download/delete actions. Thumbnails load from the public thumbnail endpoint.
+ * Description : Displays uploaded assets with search, filtering, preview, download, and delete actions.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************

@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assets
- * Description : Endpoint paths and streaming URL builders for the asset upload feature.
- *               Streaming URLs (thumbnail/view/download) are built directly from the API base URL because
+ * Description : Asset API endpoints and URL helpers.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************

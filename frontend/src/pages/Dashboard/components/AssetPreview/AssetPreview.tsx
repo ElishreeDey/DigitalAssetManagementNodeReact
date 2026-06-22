@@ -2,7 +2,6 @@
  ****************************************************************************************************************************
  * Filename    : AssetPreview
  * Description : Full-screen modal for previewing an image/video asset alongside its metadata and tags.
- *               Closes on Escape or backdrop click.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************

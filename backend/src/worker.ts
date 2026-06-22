@@ -1,9 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : worker
- * Description : Standalone entry point for the Worker service — runs as a separate process/container from the
- *               API so it can be scaled independently (docker service scale worker=N) based on RabbitMQ queue
- *               depth. Does not start an HTTP server; only connects to the DB and begins consuming jobs.
+ * Description : Worker service entry point.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************

@@ -1,11 +1,9 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Dashboard
- * Description : Main DAM dashboard — shown after login. Fetches the current user from /me on mount,
- *               displays stats, quick-actions, and an empty-state for the asset library.
- *               Accepts onLogout so App.tsx controls the view transition back to Login.
+ * Description : Main DAM dashboard containing asset management, upload, and user account views.
  * Author      : Elishree Dey Chand
- * Created     : 2026-06-15
+ * Created     : 2026-06-17
  ****************************************************************************************************************************
  */
 
@@ -51,8 +49,6 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   )
 
   useEffect(() => {
-    // Fetch identity from the cookie-backed /me endpoint on every mount
-    // so the dashboard always reflects the actual logged-in user.
     authService
       .curLoggedInUser()
       .then(setUser)
@@ -64,7 +60,6 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     try {
       await authService.logout()
     } finally {
-      // Navigate to login regardless of whether the server call succeeded.
       onLogout()
     }
   }
@@ -74,7 +69,6 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     setActiveNav('assets')
   }
 
-  // Avatar letter from the email prefix (e.g. "elishree@…" → "E").
   const avatarLetter = user?.email?.[0]?.toUpperCase() ?? '?'
 
   const today = new Date().toLocaleDateString('en-US', {

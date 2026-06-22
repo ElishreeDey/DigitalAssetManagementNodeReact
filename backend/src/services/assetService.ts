@@ -1,9 +1,8 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetService
- * Description : MinIO storage operations and asset enrichment logic for the upload feature.
- *               All direct MinIO SDK calls are isolated here — controllers and workers call these
- *               functions and never touch the MinIO client directly.
+ * Description : MinIO storage operations and asset upload feature.
+ *               All direct MinIO SDK calls are isolated here — controllers and workers call these functions.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-16
  ****************************************************************************************************************************
@@ -15,8 +14,7 @@ import type { Readable } from 'stream'
 import { minioClient, BUCKET_NAME } from '../config'
 import { MESSAGES } from '../constants'
 
-// ─── Storage name ─────────────────────────────────────────────────────────────
-
+// Storage name
 // Generates a UUID-based filename to use in MinIO, preserving the original extension.
 // The original filename is stored only in the DB — MinIO never sees user-supplied names
 // which prevents path traversal and filename collision issues.
@@ -25,9 +23,7 @@ export function generateStoredName(originalName: string): string {
   return `${randomUUID()}${ext}`
 }
 
-// ─── MinIO upload ─────────────────────────────────────────────────────────────
-
-// Uploads the raw file buffer to MinIO and returns the stored object name (bucket path).
+// MinIO upload
 export async function uploadToMinio(
   buffer: Buffer,
   storedName: string,
@@ -52,7 +48,6 @@ export async function uploadToMinio(
   }
 }
 
-// Uploads a thumbnail buffer produced by the worker.
 // Thumbnails are stored under a 'thumbnails/' prefix to separate them from originals.
 export async function uploadThumbnailToMinio(
   buffer: Buffer,
@@ -78,7 +73,7 @@ export async function uploadThumbnailToMinio(
   }
 }
 
-// Uploads a transcoded video rendition (e.g. 1080p/720p variant) produced by the worker.
+// Uploads a transcoded video rendition
 // Renditions are stored under a 'renditions/' prefix, separate from originals and thumbnails.
 export async function uploadRenditionToMinio(
   buffer: Buffer,
@@ -105,10 +100,8 @@ export async function uploadRenditionToMinio(
   }
 }
 
-// ─── MinIO stream ─────────────────────────────────────────────────────────────
-
+// MinIO stream
 // Returns a readable stream for a stored object — used by view/download endpoints.
-// The stream is piped directly to the HTTP response so the file is never fully loaded into memory.
 export async function streamFromMinio(bucketPath: string): Promise<Readable> {
   try {
     return await minioClient.getObject(BUCKET_NAME, bucketPath)
@@ -120,10 +113,7 @@ export async function streamFromMinio(bucketPath: string): Promise<Readable> {
   }
 }
 
-// ─── MinIO delete ─────────────────────────────────────────────────────────────
-
-// Removes a single object from MinIO. Called twice on asset delete: once for the
-// original file and once for the thumbnail (if it exists).
+// MinIO delete. Removes a single object from MinIO.
 export async function deleteFromMinio(bucketPath: string): Promise<void> {
   try {
     await minioClient.removeObject(BUCKET_NAME, bucketPath)
@@ -135,10 +125,8 @@ export async function deleteFromMinio(bucketPath: string): Promise<void> {
   }
 }
 
-// ─── Auto-tagging ─────────────────────────────────────────────────────────────
-
-// Produces an array of descriptive tags from the file's metadata.
-// These are stored in the DB and used for filtering in the gallery.
+// Auto-tagging
+// Produces an array of descriptive tags from the file's metadata. These are stored in the DB and used for filtering.
 export function generateTags(
   originalName: string,
   mimeType: string,
@@ -175,7 +163,7 @@ export function generateTags(
   const nameWithoutExt = path.basename(originalName, path.extname(originalName))
   nameWithoutExt
     .toLowerCase()
-    .split(/[\s_\-.()[\]]+/) // split on spaces, underscores, dashes, dots, brackets
+    .split(/[\s_\-.()[\]]+/)
     .filter((word) => word.length > 2 && !STOP_WORDS.has(word))
     .forEach((word) => tags.add(word))
 

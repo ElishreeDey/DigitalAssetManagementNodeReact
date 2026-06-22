@@ -1,11 +1,10 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Register.css
- * Description : Register page styles — imports the shared auth layout then adds register-specific overrides.
+ * Description : Register page styles.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
 
-/* Re-use every layout class from Login (.login-page, .login-brand, .login-form-panel, etc.) */
 @import url('../Login/Login.css');
