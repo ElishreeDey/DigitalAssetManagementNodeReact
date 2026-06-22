@@ -80,3 +80,9 @@ temp
 # Package Manager
 # =========================
 .pnpm-store
+
+# npm workspaces hoist all deps into the root package-lock.json — per-workspace
+# lock files are never kept in sync by npm and just go stale (caused Docker
+# `npm ci` failures repeatedly). Only the root lock file is the source of truth.
+backend/package-lock.json
+frontend/package-lock.json

@@ -15,3 +15,12 @@ export {
   updateUser,
   deleteUser,
 } from './userController'
+export {
+  uploadMiddleware,
+  uploadAssets,
+  listAssets,
+  streamAsset,
+  streamThumbnail,
+  downloadAsset,
+  deleteAsset,
+} from './assetController'

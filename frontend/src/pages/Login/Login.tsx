@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Login
- * Description : Login page — pure UI component that renders the split-screen login form using the useLoginForm hook.
- *               Accepts navigation callbacks so App.tsx controls all view transitions.
+ * Description : Login page component for user authentication.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
@@ -119,22 +118,6 @@ export default function Login({
               </span>
             )}
           </div>
-
-          {/* Remember me + Forgot password */}
-          {/* <div className="login-options">
-            <label className="remember-me">
-              <input
-                type="checkbox"
-                name="rememberMe"
-                checked={fields.rememberMe}
-                onChange={handleChange}
-              />
-              Remember me
-            </label>
-             <a href="#" className="forgot-link">
-              Forgot password?
-            </a> 
-          </div> */}
 
           {/* Submit */}
           <button type="submit" className="login-submit" disabled={isLoading}>

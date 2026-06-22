@@ -23,18 +23,18 @@ import {
 
 const router = express.Router()
 
-// ── Auth (public) ──────────────────────────────────────────────────────────
+// Auth (public)
 router.post('/register', register)
 router.post('/login', login)
 router.post('/logout', logout)
 
-// ── Auth (protected) ───────────────────────────────────────────────────────
+// Auth (protected)
 router.get('/verify', authMiddleware, (_req, res) =>
   res.status(200).json({ valid: true })
 )
 router.get('/me', authMiddleware, curLoggedInUser)
 
-// ── User CRUD (protected) ──────────────────────────────────────────────────
+// User CRUD (protected)
 router.post('/users', authMiddleware, createUser)
 router.get('/users', authMiddleware, getUsers)
 router.get('/users/:id', authMiddleware, getUserById)

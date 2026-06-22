@@ -15,6 +15,16 @@ services:
       NODE_ENV: production
       DB_HOST: postgres
 
+  worker:
+    build:
+      context: ./backend
+      target: production
+    command: npm run worker:start
+    volumes: []
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+
   frontend:
     build:
       context: ./frontend

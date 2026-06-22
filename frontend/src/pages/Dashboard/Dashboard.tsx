@@ -1,48 +1,54 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Dashboard
- * Description : Main DAM dashboard — shown after login. Fetches the current user from /me on mount,
- *               displays stats, quick-actions, and an empty-state for the asset library.
- *               Accepts onLogout so App.tsx controls the view transition back to Login.
+ * Description : Main DAM dashboard containing asset management, upload, and user account views.
  * Author      : Elishree Dey Chand
- * Created     : 2026-06-15
+ * Created     : 2026-06-17
  ****************************************************************************************************************************
  */
 
 import { useState, useEffect } from 'react'
 import { authService } from '../../services'
 import { damLogo, assetsIcon, uploadIcon, collectionsIcon } from '../../assets'
-import type { AuthUser } from '../../types'
+import type { AuthUser, AssetItem } from '../../types'
+import { useAssets } from '../../hooks'
+import UploadZone from './components/UploadZone/UploadZone'
+import AssetGallery from './components/AssetGallery/AssetGallery'
+import AssetPreview from './components/AssetPreview/AssetPreview'
 import './Dashboard.css'
 
 type DashboardProps = {
   onLogout: () => void
 }
 
-type NavKey = 'dashboard' | 'assets' | 'upload' | 'collections'
+type NavKey = 'assets' | 'upload' | 'teams'
 
 type NavItem = {
   key: NavKey
   label: string
-  iconText?: string // Unicode fallback for items without an SVG file yet
-  iconSrc?: string // Static SVG file path
+  iconSrc: string
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { key: 'dashboard', label: 'Dashboard', iconText: '⊞' },
   { key: 'assets', label: 'Assets', iconSrc: assetsIcon },
   { key: 'upload', label: 'Upload', iconSrc: uploadIcon },
-  { key: 'collections', label: 'Collections', iconSrc: collectionsIcon },
+  { key: 'teams', label: 'Teams', iconSrc: collectionsIcon },
 ]
 
 export default function Dashboard({ onLogout }: DashboardProps) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [activeNav, setActiveNav] = useState<NavKey>('dashboard')
+  const [activeNav, setActiveNav] = useState<NavKey>('assets')
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [previewAsset, setPreviewAsset] = useState<AssetItem | null>(null)
+  const [search, setSearch] = useState('')
+  const [typeFilter, setTypeFilter] = useState('all')
+
+  const { assets, isLoading, error, addAssets, removeAsset } = useAssets(
+    search,
+    typeFilter
+  )
 
   useEffect(() => {
-    // Fetch identity from the cookie-backed /me endpoint on every mount
-    // so the dashboard always reflects the actual logged-in user.
     authService
       .curLoggedInUser()
       .then(setUser)
@@ -54,12 +60,15 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     try {
       await authService.logout()
     } finally {
-      // Navigate to login regardless of whether the server call succeeded.
       onLogout()
     }
   }
 
-  // Avatar letter from the email prefix (e.g. "elishree@…" → "E").
+  function handleUploaded(uploaded: AssetItem[]) {
+    addAssets(uploaded)
+    setActiveNav('assets')
+  }
+
   const avatarLetter = user?.email?.[0]?.toUpperCase() ?? '?'
 
   const today = new Date().toLocaleDateString('en-US', {
@@ -81,7 +90,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
         {/* Nav */}
         <nav className="sidebar-nav" aria-label="Main navigation">
-          {NAV_ITEMS.map(({ key, label, iconSrc, iconText }) => (
+          {NAV_ITEMS.map(({ key, label, iconSrc }) => (
             <button
               key={key}
               type="button"
@@ -89,17 +98,13 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               onClick={() => setActiveNav(key)}
             >
               <span className="nav-icon" aria-hidden="true">
-                {iconSrc ? (
-                  <img
-                    src={iconSrc}
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="nav-icon-img"
-                  />
-                ) : (
-                  iconText
-                )}
+                <img
+                  src={iconSrc}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="nav-icon-img"
+                />
               </span>
               {label}
             </button>
@@ -141,27 +146,38 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             </h1>
             <p className="page-date">{today}</p>
           </div>
-          <div className="topbar-right">
-            <div className="search-box" role="search">
-              <span className="search-icon" aria-hidden="true">
-                🔍
-              </span>
-              <input
-                type="search"
-                placeholder="Search assets…"
-                className="search-input"
-                aria-label="Search assets"
-              />
-            </div>
-            <button type="button" className="btn-upload-cta">
-              + Upload
-            </button>
-          </div>
         </header>
 
         {/* Scrollable content area */}
-        <main className="content-area"></main>
+        <main className="content-area">
+          {activeNav === 'upload' && <UploadZone onUploaded={handleUploaded} />}
+
+          {activeNav === 'assets' && (
+            <AssetGallery
+              assets={assets}
+              isLoading={isLoading}
+              error={error}
+              onDelete={removeAsset}
+              onPreview={setPreviewAsset}
+              search={search}
+              onSearchChange={setSearch}
+              typeFilter={typeFilter}
+              onTypeChange={setTypeFilter}
+            />
+          )}
+
+          {activeNav === 'teams' && (
+            <div className="coming-soon">
+              <p>Teams coming soon.</p>
+            </div>
+          )}
+        </main>
       </div>
+
+      <AssetPreview
+        asset={previewAsset}
+        onClose={() => setPreviewAsset(null)}
+      />
     </div>
   )
 }

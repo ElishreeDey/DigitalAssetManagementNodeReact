@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetRepository
- * Description : All direct database operations for the assets table — no business logic lives here.
- *               Controllers and workers call these methods; raw Sequelize queries stay confined to this file.
+ * Description : Database operations for assets.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-16
  ****************************************************************************************************************************
@@ -18,31 +17,27 @@ import type {
 } from '../types'
 
 export class AssetRepository {
-  // Insert a new asset row immediately after upload — status defaults to 'pending'
   async create(data: AssetCreateData): Promise<Asset> {
     return Asset.create(data as unknown as Asset)
   }
 
-  // Used by the worker and streaming endpoints to fetch a single asset by UUID
   async findById(id: string): Promise<Asset | null> {
     return Asset.findByPk(id)
   }
 
-  // Paginated list with optional search (filename) and type (image/video) filter
-  async list(query: AssetListQuery): Promise<Asset[]> {
+  async list(query: AssetListQuery, userId: string): Promise<Asset[]> {
     const page = Math.max(1, Number(query.page) || 1)
-    const limit = Math.min(100, Number(query.limit) || 20) // cap at 100 per page
+    const limit = Math.min(100, Number(query.limit) || 20) // Cap page size
     const offset = (page - 1) * limit
 
-    // Build the WHERE clause only for filters that were actually provided
-    const where: Record<string, unknown> = {}
+    // Filter by uploader so users only ever see assets they uploaded themselves.
+    const where: Record<string, unknown> = { uploadedBy: userId }
 
     if (query.search) {
       where['originalName'] = { [Op.iLike]: `%${query.search}%` }
     }
 
     if (query.type && query.type !== 'all') {
-      // mimeType starts with 'image/' or 'video/' — match the category prefix
       where['mimeType'] = { [Op.iLike]: `${query.type}/%` }
     }
 
@@ -54,12 +49,10 @@ export class AssetRepository {
     })
   }
 
-  // Called by the worker when it picks up a job — marks the asset as in-progress
   async updateStatus(id: string, status: AssetStatus): Promise<void> {
     await Asset.update({ status }, { where: { id } })
   }
 
-  // Called by the worker after thumbnail/transcode completes — writes all processing results at once
   async updateAfterProcessing(
     id: string,
     result: AssetProcessingResult
@@ -76,19 +69,20 @@ export class AssetRepository {
     )
   }
 
-  // Increments download counter each time a file is downloaded — used for analytics
   async incrementDownloadCount(id: string): Promise<void> {
     await Asset.increment('downloadCount', { where: { id } })
   }
 
-  // Returns the asset before deleting so the caller can remove the file from MinIO too
+  // Return the asset so callers can clean up related files after deletion.
   async delete(id: string): Promise<Asset | null> {
     const asset = await Asset.findByPk(id)
+
     if (!asset) return null
+
     await asset.destroy()
     return asset
   }
 }
 
-// Singleton instance — import this object rather than instantiating the class directly
+// Shared repository instance.
 export const assetRepository = new AssetRepository()

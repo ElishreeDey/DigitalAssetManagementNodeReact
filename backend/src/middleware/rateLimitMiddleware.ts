@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : rateLimitMiddleware
- * Description : Applies per-IP rate limiting to all API routes to prevent brute-force and spam requests.
+ * Description : API rate limiting middleware.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************

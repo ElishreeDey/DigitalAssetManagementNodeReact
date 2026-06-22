@@ -3,7 +3,7 @@
  * Filename    : assetModel
  * Description : Sequelize model for the 'assets' table — stores metadata for every uploaded file.
  *               The actual file binary is never stored in the DB; only the MinIO bucket path is kept here.
- *               Uses UUID primary key so IDs are unguessable — safe to expose in public streaming URLs.
+ *               Uses UUID primary key.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-16
  ****************************************************************************************************************************
@@ -23,7 +23,7 @@ export class Asset extends Model<
   InferAttributes<Asset>,
   InferCreationAttributes<Asset>
 > {
-  // CreationOptional means Sequelize generates these — no need to provide on create
+  // CreationOptional means Sequelize generates these
   declare id: CreationOptional<string>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -40,9 +40,9 @@ export class Asset extends Model<
 
   // Enrichment — set by the worker after processing
   declare tags: string[] // auto-generated: category, type, size label, filename keywords
-  declare width: number | null // pixel width  (images/videos only)
-  declare height: number | null // pixel height (images/videos only)
-  declare renditions: CreationOptional<VideoRendition[]> // transcoded 1080p/720p variants — videos only
+  declare width: number | null
+  declare height: number | null
+  declare renditions: CreationOptional<VideoRendition[]>
 
   // Lifecycle
   declare status: AssetStatus // pending → processing → ready | failed
@@ -84,7 +84,6 @@ Asset.init(
       defaultValue: null,
     },
     tags: {
-      // ARRAY is PostgreSQL-specific — stores tags inline without a join table
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
       defaultValue: [],

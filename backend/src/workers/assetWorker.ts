@@ -1,11 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetWorker
- * Description : RabbitMQ consumer for the 'asset-processing' queue. Runs as a separate process from the API
- *               so it can be scaled independently (docker service scale worker=N) based on queue depth.
- *               Images: Sharp generates a 400×400 thumbnail.
- *               Videos: FFmpeg extracts a thumbnail frame and transcodes 1080p/720p renditions (no upscaling).
- *               Every job updates the asset's lifecycle status: pending → processing → ready | failed.
+ * Description : RabbitMQ worker for asset processing.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
@@ -47,8 +43,7 @@ function streamToBuffer(readable: NodeJS.ReadableStream): Promise<Buffer> {
   })
 }
 
-// ─── Image pipeline ─────────────────────────────────────────────────────────────
-
+// Image pipeline
 async function processImage(data: AssetJobData): Promise<void> {
   const stream = await streamFromMinio(data.bucketPath)
   const buffer = await streamToBuffer(stream)
@@ -72,8 +67,7 @@ async function processImage(data: AssetJobData): Promise<void> {
   })
 }
 
-// ─── Video pipeline ─────────────────────────────────────────────────────────────
-
+// Video pipeline
 async function processVideo(data: AssetJobData): Promise<void> {
   const ext = path.extname(data.originalName) || '.mp4'
   const stream = await streamFromMinio(data.bucketPath)
@@ -84,7 +78,6 @@ async function processVideo(data: AssetJobData): Promise<void> {
   try {
     const meta = await getVideoMetadata(inputPath)
 
-    // Capture a frame as the gallery thumbnail — same role as Sharp's image thumbnail
     const thumbFolder = path.dirname(inputPath)
     const thumbFilename = `${data.assetId}-thumb.jpg`
     await generateVideoThumbnail(
@@ -101,7 +94,6 @@ async function processVideo(data: AssetJobData): Promise<void> {
       data.assetId
     )
 
-    // Transcode each configured resolution — skip any taller than the source (no upscaling)
     const renditions: VideoRendition[] = []
     for (const resolution of VIDEO_RESOLUTIONS) {
       if (meta.height && meta.height < resolution.height) continue
@@ -127,17 +119,12 @@ async function processVideo(data: AssetJobData): Promise<void> {
       renditions,
     })
   } finally {
-    // Always clean up temp files, even if transcoding failed partway through
+    // Always clean up temp files
     await cleanupFiles(tempFiles)
   }
 }
 
-// ─── Consumer ───────────────────────────────────────────────────────────────────
-
-// Extracted from the consume callback because amqplib's callback type expects a
-// synchronous (void-returning) function — passing an async function directly there
-// would let unhandled rejections slip past ack/nack, which @typescript-eslint flags
-// as no-misused-promises. The callback below stays sync and fires this off explicitly.
+// Consumer
 async function handleMessage(
   msg: ConsumeMessage,
   channel: Channel
@@ -160,7 +147,6 @@ async function handleMessage(
     } else if (category === 'video') {
       await processVideo(data)
     } else {
-      // Unsupported type slipped past the upload MIME filter — mark ready with no enrichment
       await assetRepository.updateStatus(data.assetId, 'ready')
     }
 

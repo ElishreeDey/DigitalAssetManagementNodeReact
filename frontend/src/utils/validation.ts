@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : validation
- * Description : Pure validation functions for login and register form fields — no side effects, fully unit-testable.
+ * Description : Form validation utilities
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************

@@ -24,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     // On every page load (including browser refresh), verify the httpOnly cookie
-    // is still valid. If /me succeeds, go straight to dashboard; otherwise login.
+    // is still valid go straight to dashboard; otherwise login.
     authService
       .curLoggedInUser()
       .then(() => setView('dashboard'))

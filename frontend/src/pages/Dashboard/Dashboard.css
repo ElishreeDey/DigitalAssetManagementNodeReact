@@ -81,9 +81,7 @@
 }
 
 .nav-icon {
-  font-size: 15px;
   width: 20px;
-  text-align: center;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -221,68 +219,6 @@
   color: var(--text-muted);
 }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 0 14px;
-  height: 38px;
-  width: 240px;
-  transition: border-color 0.15s ease;
-}
-
-.search-box:focus-within {
-  border-color: var(--primary);
-}
-
-.search-icon {
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.search-input {
-  border: none;
-  background: none;
-  font-size: 13px;
-  color: var(--text-primary);
-  outline: none;
-  width: 100%;
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-}
-
-.btn-upload-cta {
-  height: 38px;
-  padding: 0 18px;
-  background: var(--primary);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background 0.15s ease,
-    transform 0.1s ease;
-}
-
-.btn-upload-cta:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
 /* ── Scrollable content ─────────────────────────────────── */
 .content-area {
   flex: 1;
@@ -328,6 +264,15 @@
 .btn-text:hover {
   color: var(--primary-dark);
   text-decoration: underline;
+}
+
+.coming-soon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 /* ── Responsive ─────────────────────────────────────────── */

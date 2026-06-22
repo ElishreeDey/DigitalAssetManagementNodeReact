@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : authMiddleware
- * Description : Reads the JWT from the httpOnly cookie, verifies it, and attaches the decoded payload to req.user
- *               so downstream controllers can access userId, email, and role without re-reading the token.
+ * Description : Verifies the JWT from the authentication cookie and attaches the decoded user payload to req.user.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
@@ -19,15 +18,14 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   try {
-    // The cookie is httpOnly so JS cannot read it — the browser attaches it automatically.
     const token = req.cookies?.[COOKIE_NAME] as string | undefined
 
     if (!token) {
       return res.status(401).json({ message: MESSAGES.TOKEN_MISSING_MSG })
     }
 
-    // verifyToken throws on expiry or bad signature; the catch block below handles both.
     const decoded = verifyToken(token)
+
     req.user = decoded
     next()
   } catch {
