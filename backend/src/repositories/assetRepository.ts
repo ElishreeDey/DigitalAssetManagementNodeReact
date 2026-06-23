@@ -78,8 +78,9 @@ export class AssetRepository {
   }
 
   // Return the asset so callers can clean up related files after deletion.
-  async delete(id: string): Promise<Asset | null> {
-    const asset = await Asset.findByPk(id)
+  // Scoped to uploadedBy so users can only delete assets they uploaded themselves.
+  async delete(id: string, userId: string): Promise<Asset | null> {
+    const asset = await Asset.findOne({ where: { id, uploadedBy: userId } })
 
     if (!asset) return null
 

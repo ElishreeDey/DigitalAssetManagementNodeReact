@@ -229,7 +229,7 @@ export const deleteAsset = async (
   next: NextFunction
 ) => {
   try {
-    const asset = await assetRepository.delete(req.params.id)
+    const asset = await assetRepository.delete(req.params.id, req.user!.userId)
 
     if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
