@@ -24,9 +24,9 @@ const authUserRepository = new AuthUserRepository()
 
 // Cookie options are defined once so register, login, and logout all use identical settings.
 const COOKIE_OPTIONS = {
-  httpOnly: true, // JS cannot read this cookie — prevents XSS token theft
-  secure: process.env.NODE_ENV === 'production', // HTTPS-only in production
-  sameSite: 'strict' as const, // Blocks cross-site requests (CSRF protection)
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
   maxAge: COOKIE_MAX_AGE_MS,
 }
 
@@ -39,7 +39,7 @@ export const register = async (
   try {
     const { email, password } = req.body as RegisterBody
 
-    // Validate inputs before touching the database.
+    // Validate inputs before sending to database.
     if (!email?.trim()) {
       return res.status(400).json({ message: MESSAGES.EMAIL_REQUIRED_MSG })
     }
@@ -50,7 +50,7 @@ export const register = async (
       return res.status(400).json({ message: MESSAGES.PASSWORD_TOO_SHORT_MSG })
     }
 
-    // Check for duplicates before hashing to avoid unnecessary bcrypt work.
+    // Check for duplicates Email address while authenticating User and show error if any.
     const existing = await authUserRepository.findByEmail(
       email.trim().toLowerCase()
     )
@@ -66,7 +66,7 @@ export const register = async (
       passwordHash
     )
 
-    // Issue the JWT immediately on register so the user is logged in right away.
+    // Generate token
     const token = generateToken({
       userId: authUser.id,
       email: authUser.email,
@@ -101,8 +101,7 @@ export const login = async (
       email.trim().toLowerCase()
     )
 
-    // Return the SAME generic message whether the email is unknown or the password is wrong.
-    // Distinct messages would let an attacker enumerate registered email addresses.
+    // If authentication fails show invalid credential msg
     if (!authUser) {
       return res.status(401).json({ message: MESSAGES.INVALID_CREDENTIALS_MSG })
     }
@@ -131,13 +130,11 @@ export const login = async (
 
 // POST /logout
 export const logout = (_req: Request, res: Response) => {
-  // Clear options must match the set options (httpOnly + sameSite) or the browser ignores the clear.
   res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'strict' })
   res.status(200).json({ message: MESSAGES.LOGOUT_SUCCESS_MSG })
 }
 
-// GET /me  (requires authMiddleware)
+// GET /curLoggedInUser
 export const curLoggedInUser = (req: Request, res: Response) => {
-  // req.user is populated by authMiddleware after verifying the cookie token.
   res.status(200).json(req.user)
 }

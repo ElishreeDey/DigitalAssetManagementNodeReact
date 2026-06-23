@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : userController
- * Description : Express request handlers for user CRUD operations — delegates logic to UserService.
+ * Description : Express request handlers for user CRUD operations.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************

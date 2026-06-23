@@ -17,7 +17,6 @@ import { MESSAGES } from '../constants'
 // Storage name
 // Generates a UUID-based filename to use in MinIO, preserving the original extension.
 // The original filename is stored only in the DB — MinIO never sees user-supplied names
-// which prevents path traversal and filename collision issues.
 export function generateStoredName(originalName: string): string {
   const ext = path.extname(originalName).toLowerCase()
   return `${randomUUID()}${ext}`
@@ -125,8 +124,7 @@ export async function deleteFromMinio(bucketPath: string): Promise<void> {
   }
 }
 
-// Auto-tagging
-// Produces an array of descriptive tags from the file's metadata. These are stored in the DB and used for filtering.
+// Auto-tagging. Produces an array of descriptive tags from the file's metadata these will be stored in DB.
 export function generateTags(
   originalName: string,
   mimeType: string,
@@ -143,14 +141,12 @@ export function generateTags(
   const ext = path.extname(originalName).replace('.', '').toLowerCase()
   if (ext) tags.add(ext)
 
-  // Size bucket — lets users filter by rough file size
-  if (size < 1024 * 1024)
-    tags.add('small') // < 1 MB
-  else if (size < 10 * 1024 * 1024)
-    tags.add('medium') // 1–10 MB
-  else tags.add('large') // > 10 MB
+  // file Size small or medium or large
+  if (size < 1024 * 1024) tags.add('small')
+  else if (size < 10 * 1024 * 1024) tags.add('medium')
+  else tags.add('large')
 
-  // Keywords from the filename — split on common separators, skip very short words
+  // Keywords skip very short words from file name
   const STOP_WORDS = new Set([
     'the',
     'and',

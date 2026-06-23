@@ -17,7 +17,7 @@ export const PASSWORD_MIN_LENGTH = 6
 export const JWT_EXPIRES_IN = '1d'
 
 // Auth cookie
-// Keep cookie expiry aligned with JWT expiry.
+// Keep cookie expiry 1d.
 export const COOKIE_NAME = 'token'
 export const COOKIE_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 1 day
 
@@ -37,7 +37,7 @@ export const MINIO_BUCKET_REGION = 'us-east-1'
 // Shared queue name used by both publishers and consumers.
 export const ASSET_QUEUE_NAME = 'asset-processing'
 
-// File upload
+// File upload limit max size, max number of upload, file types allowed for upload.
 export const UPLOAD_MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
 export const UPLOAD_MAX_FILES = 20
 export const UPLOAD_ACCEPTED_MIME_REGEX = /^(image|video)\/|^application\/pdf$/
@@ -45,7 +45,7 @@ export const UPLOAD_ACCEPTED_MIME_REGEX = /^(image|video)\/|^application\/pdf$/
 // Thumbnail generation
 export const THUMBNAIL_WIDTH = 400
 export const THUMBNAIL_HEIGHT = 400
-export const THUMBNAIL_QUALITY = 80 // JPEG quality (0-100)
+export const THUMBNAIL_QUALITY = 80
 
 // Video transcoding
 // Video renditions generated for uploaded videos.
