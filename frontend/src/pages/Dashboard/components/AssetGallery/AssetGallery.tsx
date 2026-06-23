@@ -63,7 +63,7 @@ export default function AssetGallery({
           onChange={(e) => onSearchChange(e.target.value)}
         />
 
-        {/* filter by all or image or video */}
+        {/* filter by all or image or video or document */}
         <div className="gallery-tabs">
           {TYPE_TABS.map((tab) => (
             <button
@@ -104,11 +104,12 @@ export default function AssetGallery({
         {assets.map((asset) => (
           <div key={asset.id} className="asset-card">
             <div className="asset-card-thumb" onClick={() => onPreview(asset)}>
-              {asset.mimeType === 'application/pdf' ? (
-                <div className="asset-card-placeholder">📄</div>
-              ) : asset.mimeType.startsWith('video/') &&
-                asset.status !== 'ready' ? (
-                <div className="asset-card-placeholder">▶</div>
+              {asset.status !== 'ready' &&
+              (asset.mimeType.startsWith('video/') ||
+                asset.mimeType === 'application/pdf') ? (
+                <div className="asset-card-placeholder">
+                  {asset.mimeType === 'application/pdf' ? '📄' : '▶'}
+                </div>
               ) : (
                 <img
                   src={assetUrl.thumbnail(asset.id)}
