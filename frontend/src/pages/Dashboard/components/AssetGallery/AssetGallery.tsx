@@ -21,6 +21,8 @@ type Props = {
   onSearchChange: (value: string) => void
   typeFilter: string
   onTypeChange: (value: string) => void
+  sortOrder: 'asc' | 'desc'
+  onSortChange: (value: 'asc' | 'desc') => void
 }
 
 const TYPE_TABS = [
@@ -39,6 +41,8 @@ export default function AssetGallery({
   onSearchChange,
   typeFilter,
   onTypeChange,
+  sortOrder,
+  onSortChange,
 }: Props) {
   function formatBytes(b: number) {
     if (b < 1024) return `${b} B`
@@ -49,6 +53,7 @@ export default function AssetGallery({
   return (
     <div className="gallery-page">
       <div className="gallery-toolbar">
+        {/* search by tags or filename */}
         <input
           type="search"
           placeholder="Search by filename…"
@@ -56,6 +61,8 @@ export default function AssetGallery({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
+
+        {/* filter by all or image or video */}
         <div className="gallery-tabs">
           {TYPE_TABS.map((tab) => (
             <button
@@ -68,6 +75,20 @@ export default function AssetGallery({
             </button>
           ))}
         </div>
+
+        {/* filter by asc or desc upload order */}
+        <label className="gallery-sort-label">
+          Filter By:
+          <select
+            className="gallery-sort"
+            value={sortOrder}
+            onChange={(e) => onSortChange(e.target.value as 'asc' | 'desc')}
+            aria-label="Sort by upload date"
+          >
+            <option value="desc">Newest first</option>
+            <option value="asc">Oldest first</option>
+          </select>
+        </label>
       </div>
 
       {isLoading && <p className="gallery-status">Loading assets…</p>}

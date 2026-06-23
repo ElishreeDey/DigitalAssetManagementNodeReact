@@ -13,7 +13,11 @@ import type { AssetItem } from '../types'
 
 const POLL_INTERVAL_MS = 5000
 
-export function useAssets(search: string, typeFilter: string) {
+export function useAssets(
+  search: string,
+  typeFilter: string,
+  sortOrder: 'asc' | 'desc' = 'desc'
+) {
   const [assets, setAssets] = useState<AssetItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,6 +28,7 @@ export function useAssets(search: string, typeFilter: string) {
       const data = await assetService.list({
         search: search || undefined,
         type: typeFilter !== 'all' ? typeFilter : undefined,
+        sort: sortOrder,
       })
 
       setAssets(data)
@@ -38,7 +43,7 @@ export function useAssets(search: string, typeFilter: string) {
     } finally {
       setIsLoading(false)
     }
-  }, [search, typeFilter])
+  }, [search, typeFilter, sortOrder])
 
   useEffect(() => {
     setIsLoading(true)

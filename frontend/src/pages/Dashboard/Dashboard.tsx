@@ -42,10 +42,12 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   const [previewAsset, setPreviewAsset] = useState<AssetItem | null>(null)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   const { assets, isLoading, error, addAssets, removeAsset } = useAssets(
     search,
-    typeFilter
+    typeFilter,
+    sortOrder
   )
 
   useEffect(() => {
@@ -163,6 +165,8 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               onSearchChange={setSearch}
               typeFilter={typeFilter}
               onTypeChange={setTypeFilter}
+              sortOrder={sortOrder}
+              onSortChange={setSortOrder}
             />
           )}
 

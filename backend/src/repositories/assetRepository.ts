@@ -41,9 +41,11 @@ export class AssetRepository {
       where['mimeType'] = { [Op.iLike]: `${query.type}/%` }
     }
 
+    const sortOrder = query.sort === 'asc' ? 'ASC' : 'DESC'
+
     return Asset.findAll({
       where,
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', sortOrder]],
       limit,
       offset,
     })

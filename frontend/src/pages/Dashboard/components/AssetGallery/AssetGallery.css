@@ -4,7 +4,7 @@
   gap: 20px;
 }
 
-/* ── Toolbar ──────────────────────────────────────────────── */
+/* Toolbar */
 .gallery-toolbar {
   display: flex;
   align-items: center;
@@ -24,6 +24,7 @@
   font-size: 13px;
   outline: none;
   transition: border-color 0.15s ease;
+  color: var(--text-primary);
 }
 
 .gallery-search:focus {
@@ -32,17 +33,21 @@
 
 .gallery-tabs {
   display: flex;
+  align-items: center;
+  height: 38px;
   gap: 6px;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 3px;
+  padding: 0 3px;
+  box-sizing: border-box;
 }
 
 .gallery-tab {
   background: none;
   border: none;
-  padding: 6px 16px;
+  height: 30px;
+  padding: 0 16px;
   border-radius: 6px;
   font-size: 12.5px;
   font-weight: 600;
@@ -58,7 +63,35 @@
   color: #fff;
 }
 
-/* ── Status messages ──────────────────────────────────────── */
+.gallery-sort-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.gallery-sort {
+  height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+
+  color: var(--text-muted);
+  background: var(--white);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.gallery-sort:focus {
+  border-color: var(--primary);
+}
+
+/* Gallery Status */
 .gallery-status {
   font-size: 13px;
   color: var(--text-muted);
@@ -70,7 +103,7 @@
   color: var(--error);
 }
 
-/* ── Grid ─────────────────────────────────────────────────── */
+/* Galary Grid */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

@@ -36,6 +36,7 @@ export const assetService = {
   async list(params?: {
     search?: string
     type?: string
+    sort?: 'asc' | 'desc'
   }): Promise<AssetItem[]> {
     const res = await api.get<{ assets: AssetItem[] }>(ASSET_ENDPOINTS.LIST, {
       params,
