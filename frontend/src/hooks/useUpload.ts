@@ -12,11 +12,11 @@ import { assetService } from '../services'
 import type { AssetItem, UploadFileState } from '../types'
 
 const MAX_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
-const ACCEPTED_MIME = /^(image|video)\//
+const ACCEPTED_MIME = /^(image|video)\/|^application\/pdf$/
 
 function validateFile(file: File): string | null {
   if (!ACCEPTED_MIME.test(file.type))
-    return 'Only images and videos are accepted'
+    return 'Only images, videos, and PDFs are accepted'
 
   if (file.size > MAX_SIZE_BYTES) return 'File exceeds the 50 MB limit'
 

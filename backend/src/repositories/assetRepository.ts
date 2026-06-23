@@ -37,7 +37,9 @@ export class AssetRepository {
       where['originalName'] = { [Op.iLike]: `%${query.search}%` }
     }
 
-    if (query.type && query.type !== 'all') {
+    if (query.type === 'document') {
+      where['mimeType'] = 'application/pdf'
+    } else if (query.type && query.type !== 'all') {
       where['mimeType'] = { [Op.iLike]: `${query.type}/%` }
     }
 

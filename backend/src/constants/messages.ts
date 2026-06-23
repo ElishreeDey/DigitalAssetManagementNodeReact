@@ -71,7 +71,7 @@ export const MESSAGES = {
   // Asset CRUD
   ASSET_NOT_FOUND_MSG: 'Asset not found',
   ASSET_NO_FILES_MSG: 'No files were uploaded',
-  ASSET_INVALID_TYPE_MSG: 'Only image and video files are accepted',
+  ASSET_INVALID_TYPE_MSG: 'Only image, video, and PDF files are accepted',
   ASSET_UPLOAD_FAILED_MSG: 'Failed to upload asset',
   ASSET_LIST_FAILED_MSG: 'Failed to fetch assets',
   ASSET_DELETE_FAILED_MSG: 'Failed to delete asset',

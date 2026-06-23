@@ -126,7 +126,8 @@
   background: var(--bg);
 }
 
-.queue-thumb--video {
+.queue-thumb--video,
+.queue-thumb--pdf {
   display: flex;
   align-items: center;
   justify-content: center;

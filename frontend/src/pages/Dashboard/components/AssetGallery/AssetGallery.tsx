@@ -29,6 +29,7 @@ const TYPE_TABS = [
   { key: 'all', label: 'All' },
   { key: 'image', label: 'Images' },
   { key: 'video', label: 'Videos' },
+  { key: 'document', label: 'Documents' },
 ]
 
 export default function AssetGallery({
@@ -103,8 +104,10 @@ export default function AssetGallery({
         {assets.map((asset) => (
           <div key={asset.id} className="asset-card">
             <div className="asset-card-thumb" onClick={() => onPreview(asset)}>
-              {asset.mimeType.startsWith('video/') &&
-              asset.status !== 'ready' ? (
+              {asset.mimeType === 'application/pdf' ? (
+                <div className="asset-card-placeholder">📄</div>
+              ) : asset.mimeType.startsWith('video/') &&
+                asset.status !== 'ready' ? (
                 <div className="asset-card-placeholder">▶</div>
               ) : (
                 <img
