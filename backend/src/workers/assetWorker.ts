@@ -47,13 +47,12 @@ function streamToBuffer(readable: NodeJS.ReadableStream): Promise<Buffer> {
   })
 }
 
-// Image
-async function processImage(data: AssetJobData): Promise<void> {
-  const stream = await streamFromMinio(data.bucketPath)
-  const buffer = await streamToBuffer(stream)
-  const meta = await sharp(buffer).metadata()
-
-  const thumbnail = await sharp(buffer)
+// Every asset type gets a same-sized, same-quality thumbnail.
+async function buildAndUploadThumbnail(
+  sourceBuffer: Buffer,
+  assetId: string
+): Promise<string> {
+  const thumbnail = await sharp(sourceBuffer)
     .resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, {
       fit: 'cover',
       position: 'centre',
@@ -61,7 +60,16 @@ async function processImage(data: AssetJobData): Promise<void> {
     .jpeg({ quality: THUMBNAIL_QUALITY })
     .toBuffer()
 
-  const thumbnailPath = await uploadThumbnailToMinio(thumbnail, data.assetId)
+  return uploadThumbnailToMinio(thumbnail, assetId)
+}
+
+// Image
+async function processImage(data: AssetJobData): Promise<void> {
+  const stream = await streamFromMinio(data.bucketPath)
+  const buffer = await streamToBuffer(stream)
+  const meta = await sharp(buffer).metadata()
+
+  const thumbnailPath = await buildAndUploadThumbnail(buffer, data.assetId)
 
   await assetRepository.updateAfterProcessing(data.assetId, {
     thumbnailPath,
@@ -93,7 +101,7 @@ async function processVideo(data: AssetJobData): Promise<void> {
     const thumbFullPath = path.join(thumbFolder, thumbFilename)
     tempFiles.push(thumbFullPath)
     const thumbBuffer = await fs.readFile(thumbFullPath)
-    const thumbnailPath = await uploadThumbnailToMinio(
+    const thumbnailPath = await buildAndUploadThumbnail(
       thumbBuffer,
       data.assetId
     )
@@ -137,16 +145,10 @@ async function processDocument(data: AssetJobData): Promise<void> {
 
   try {
     const pageBuffer = await renderFirstPage(inputPath)
-
-    const thumbnail = await sharp(pageBuffer)
-      .resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, {
-        fit: 'cover',
-        position: 'centre',
-      })
-      .jpeg({ quality: THUMBNAIL_QUALITY })
-      .toBuffer()
-
-    const thumbnailPath = await uploadThumbnailToMinio(thumbnail, data.assetId)
+    const thumbnailPath = await buildAndUploadThumbnail(
+      pageBuffer,
+      data.assetId
+    )
 
     await assetRepository.updateAfterProcessing(data.assetId, {
       thumbnailPath,
