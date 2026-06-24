@@ -99,7 +99,6 @@ Asset.init(
       defaultValue: null,
     },
     renditions: {
-      // JSONB stores the array of { label, bucketPath } objects — no join table needed
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: [],
@@ -126,6 +125,10 @@ Asset.init(
     modelName: 'Asset',
     tableName: 'assets',
     timestamps: true,
+    indexes: [
+      // indexing added as list uses uploadedBy and sorts by creation date.
+      { fields: ['uploadedBy', 'createdAt'] },
+    ],
   }
 )
 

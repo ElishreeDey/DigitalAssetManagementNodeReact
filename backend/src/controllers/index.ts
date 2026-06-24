@@ -8,6 +8,7 @@
  */
 
 export { register, login, logout, curLoggedInUser } from './authController'
+
 export {
   createUser,
   getUsers,
@@ -15,6 +16,7 @@ export {
   updateUser,
   deleteUser,
 } from './userController'
+
 export {
   uploadMiddleware,
   uploadAssets,

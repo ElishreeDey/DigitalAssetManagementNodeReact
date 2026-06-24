@@ -69,19 +69,22 @@ export default function UploadZone({ onUploaded }: Props) {
           height={36}
           className="drop-zone-icon"
         />
-        <p className="drop-zone-title">Drag &amp; drop images or videos here</p>
+        <p className="drop-zone-title">
+          Drag &amp; drop images, videos, or PDFs here
+        </p>
         <p className="drop-zone-sub">
           or click to browse &nbsp;·&nbsp; max 50 MB per file
         </p>
         <div className="drop-zone-badges">
           <span className="badge">Images</span>
           <span className="badge">Videos</span>
+          <span className="badge">PDFs</span>
         </div>
         <input
           ref={inputRef}
           type="file"
           multiple
-          accept="image/*,video/*"
+          accept="image/*,video/*,application/pdf"
           className="upload-input-hidden"
           onChange={(e) => e.target.files && addFiles(e.target.files)}
           aria-hidden="true"
@@ -110,6 +113,8 @@ export default function UploadZone({ onUploaded }: Props) {
               >
                 {f.preview ? (
                   <img src={f.preview} alt="" className="queue-thumb" />
+                ) : f.file.type === 'application/pdf' ? (
+                  <div className="queue-thumb queue-thumb--pdf">📄</div>
                 ) : (
                   <div className="queue-thumb queue-thumb--video">▶</div>
                 )}

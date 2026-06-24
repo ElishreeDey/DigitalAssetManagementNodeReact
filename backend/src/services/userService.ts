@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : userService
- * Description : Business logic layer for the users resource — delegates DB operations to UserRepository.
+ * Description : Business logic layer for the users in UserRepository.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************

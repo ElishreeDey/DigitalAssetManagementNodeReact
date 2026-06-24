@@ -43,6 +43,7 @@ export type AssetProcessingResult = {
 export type AssetListQuery = {
   search?: string
   type?: string
-  page?: string // Query params arrive as strings
-  limit?: string // Query params arrive as strings
+  page?: string
+  limit?: string
+  sort?: 'asc' | 'desc' // Sort by creation date
 }

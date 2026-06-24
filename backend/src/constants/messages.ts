@@ -68,10 +68,13 @@ export const MESSAGES = {
   VIDEO_TRANSCODE_FAILED_MSG: 'Failed to transcode video',
   VIDEO_THUMBNAIL_FAILED_MSG: 'Failed to generate video thumbnail',
 
+  // PDF processing
+  PDF_THUMBNAIL_FAILED_MSG: 'Failed to generate PDF thumbnail',
+
   // Asset CRUD
   ASSET_NOT_FOUND_MSG: 'Asset not found',
   ASSET_NO_FILES_MSG: 'No files were uploaded',
-  ASSET_INVALID_TYPE_MSG: 'Only image and video files are accepted',
+  ASSET_INVALID_TYPE_MSG: 'Only image, video, and PDF files are accepted',
   ASSET_UPLOAD_FAILED_MSG: 'Failed to upload asset',
   ASSET_LIST_FAILED_MSG: 'Failed to fetch assets',
   ASSET_DELETE_FAILED_MSG: 'Failed to delete asset',

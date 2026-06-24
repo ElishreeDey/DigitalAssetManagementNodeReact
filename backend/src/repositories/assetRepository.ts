@@ -37,13 +37,17 @@ export class AssetRepository {
       where['originalName'] = { [Op.iLike]: `%${query.search}%` }
     }
 
-    if (query.type && query.type !== 'all') {
+    if (query.type === 'document') {
+      where['mimeType'] = 'application/pdf'
+    } else if (query.type && query.type !== 'all') {
       where['mimeType'] = { [Op.iLike]: `${query.type}/%` }
     }
 
+    const sortOrder = query.sort === 'asc' ? 'ASC' : 'DESC'
+
     return Asset.findAll({
       where,
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', sortOrder]],
       limit,
       offset,
     })
@@ -73,9 +77,9 @@ export class AssetRepository {
     await Asset.increment('downloadCount', { where: { id } })
   }
 
-  // Return the asset so callers can clean up related files after deletion.
-  async delete(id: string): Promise<Asset | null> {
-    const asset = await Asset.findByPk(id)
+  // users can only delete assets they uploaded themselves.
+  async delete(id: string, userId: string): Promise<Asset | null> {
+    const asset = await Asset.findOne({ where: { id, uploadedBy: userId } })
 
     if (!asset) return null
 

@@ -11,6 +11,7 @@ import { Request, Response, NextFunction } from 'express'
 import multer from 'multer'
 import { assetRepository } from '../repositories'
 import { getRabbitChannel, ASSET_QUEUE } from '../config'
+
 import {
   generateStoredName,
   uploadToMinio,
@@ -18,16 +19,20 @@ import {
   generateTags,
   streamFromMinio,
 } from '../services'
+
 import { MESSAGES } from '../constants'
+
 import {
   UPLOAD_MAX_FILE_SIZE_BYTES,
   UPLOAD_MAX_FILES,
   UPLOAD_ACCEPTED_MIME_REGEX,
 } from '../constants'
+
 import type { AssetJobData, AssetListQuery } from '../types'
 
 type IdParams = { id: string }
 
+// "MULTER" is used asset file upload without it Express can't read file data.
 const multerUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: UPLOAD_MAX_FILE_SIZE_BYTES, files: UPLOAD_MAX_FILES },
@@ -37,9 +42,10 @@ const multerUpload = multer({
   },
 })
 
-// Exported as middleware so routes can chain authentication and file upload handling.
+// Exported as middleware for Multer upload handling.
 export const uploadMiddleware = multerUpload.array('files', UPLOAD_MAX_FILES)
 
+//UploadAsset get request file img/video/pdf RabbitMq connection create rec in MinIO bucket and DB.
 export const uploadAssets = async (
   req: Request,
   res: Response,
@@ -51,21 +57,25 @@ export const uploadAssets = async (
       return res.status(400).json({ message: MESSAGES.ASSET_NO_FILES_MSG })
     }
 
-    // Upload succeeds even if queue publishing fails because the asset is already
-    // stored in MinIO and persisted in the database.
+    // Open RabbitMq where rabbitmq calls worker and generate thubnail.
     const channel = await getRabbitChannel().catch(() => null)
 
+    //Here files.map uploads multiple files simultaneously.
+    //generateStoredName is not actual file name as blue-bird.jpg it will be based on UUID.jpg like
+    //generateTags are blue,bird,.jpg etc.
     const assets = await Promise.all(
       files.map(async (file) => {
         const storedName = generateStoredName(file.originalname)
         const tags = generateTags(file.originalname, file.mimetype, file.size)
 
+        // Upload succeeds store in MinIO actual files are stored in S3 like bucket.
         const bucketPath = await uploadToMinio(
           file.buffer,
           storedName,
           file.mimetype
         )
 
+        // Upload succeeds store in the database.
         const asset = await assetRepository.create({
           originalName: file.originalname,
           storedName,
@@ -103,6 +113,7 @@ export const uploadAssets = async (
   }
 }
 
+// Get list of Assets for current loggedin user only
 export const listAssets = async (
   req: Request,
   res: Response,
@@ -110,6 +121,7 @@ export const listAssets = async (
 ) => {
   try {
     const query = req.query as AssetListQuery
+
     // Scope results to the logged-in user so each account only sees its own uploads.
     const assets = await assetRepository.list(query, req.user!.userId)
 
@@ -120,7 +132,7 @@ export const listAssets = async (
   }
 }
 
-// Public endpoint to allow browser <img> and <video> tags to load assets directly.
+// It will open the asset fullsize when you click one of them in asset galary.
 export const streamAsset = async (
   req: Request<IdParams>,
   res: Response,
@@ -210,13 +222,14 @@ export const downloadAsset = async (
   }
 }
 
+//Delete Asset feature it will delete from Repository DB and delete from MinIO bucket and thunbnail folder from MinIO
 export const deleteAsset = async (
   req: Request<IdParams>,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const asset = await assetRepository.delete(req.params.id)
+    const asset = await assetRepository.delete(req.params.id, req.user!.userId)
 
     if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })

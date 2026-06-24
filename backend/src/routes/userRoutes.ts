@@ -1,14 +1,18 @@
 /*
  ****************************************************************************************************************************
  * Filename    : userRoutes
- * Description : Registers all API routes — auth endpoints (public) and user CRUD endpoints (protected by authMiddleware).
+ * Description : Registers all API routes for user CRUD endpoints, protected by authMiddleware.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
 
 import express from 'express'
+
+// Import middleware used to verify authentication/JWT token
 import { authMiddleware } from '../middleware'
+
+// Import USER controller functions that contain the actual business logic
 import {
   register,
   login,
@@ -23,18 +27,17 @@ import {
 
 const router = express.Router()
 
-// Auth (public)
 router.post('/register', register)
 router.post('/login', login)
 router.post('/logout', logout)
 
-// Auth (protected)
+// Auth checks whether the supplied JWT token is valid.
 router.get('/verify', authMiddleware, (_req, res) =>
   res.status(200).json({ valid: true })
 )
-router.get('/me', authMiddleware, curLoggedInUser)
+router.get('/curLoggedInUser', authMiddleware, curLoggedInUser)
 
-// User CRUD (protected)
+// User CRUD
 router.post('/users', authMiddleware, createUser)
 router.get('/users', authMiddleware, getUsers)
 router.get('/users/:id', authMiddleware, getUserById)

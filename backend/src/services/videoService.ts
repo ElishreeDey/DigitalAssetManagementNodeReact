@@ -7,16 +7,20 @@
  ****************************************************************************************************************************
  */
 
+// FFmpeg is 'Fast Forward Moving Picture Experts Group"
+//It is a free, open-source command-line framework used to decode, encode, transcode, stream, filter, and play multimedia files.
 import ffmpeg from 'fluent-ffmpeg'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+
+// FFprobe used for to store Video height,width,duration of video exactly as Video meta data.
 import ffprobeInstaller from '@ffprobe-installer/ffprobe'
+
 import { randomUUID } from 'crypto'
 import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 import { MESSAGES } from '../constants'
 
-// Use bundled FFmpeg binaries to avoid requiring a system-wide installation.
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 ffmpeg.setFfprobePath(ffprobeInstaller.path)
 
@@ -26,6 +30,7 @@ export type VideoMetadata = {
   durationSeconds: number | undefined
 }
 
+// Video file arrive at buffer first now keep it in system Temp folder before processing. then delete from temp also.
 export async function writeBufferToTempFile(
   buffer: Buffer,
   extension: string
@@ -39,11 +44,12 @@ export function tempOutputPath(extension: string): string {
   return path.join(os.tmpdir(), `dam-${randomUUID()}${extension}`)
 }
 
-// Best-effort cleanup of temporary files.
+// Cleanup of temporary files. fs.unlink means clear file from system temp folder
 export async function cleanupFiles(paths: string[]): Promise<void> {
   await Promise.all(paths.map((p) => fs.unlink(p).catch(() => null)))
 }
 
+// Video meta data here both ffmpeg and ffprobe used behide the sceen
 export function getVideoMetadata(filePath: string): Promise<VideoMetadata> {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err: Error | null, data: ffmpeg.FfprobeData) => {
@@ -67,7 +73,8 @@ export function getVideoMetadata(filePath: string): Promise<VideoMetadata> {
   })
 }
 
-// "-2" preserves aspect ratio while ensuring an even width for H.264 encoding.
+//video conversion it usually change height 1080 to 720. video width FFmpeg calculate automatically and decrease.
+//Here scale 2 means decrease to even width e.g like 1280 from original width 1920
 export function transcodeVideo(
   inputPath: string,
   outputPath: string,
@@ -98,6 +105,7 @@ export function transcodeVideo(
   })
 }
 
+// generate a thumbnail for video file.
 export function generateVideoThumbnail(
   inputPath: string,
   outputFolder: string,

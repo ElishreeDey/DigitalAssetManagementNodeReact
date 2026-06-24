@@ -12,6 +12,7 @@ import path from 'path'
 import sharp from 'sharp'
 import { getRabbitChannel, ASSET_QUEUE } from '../config'
 import { assetRepository } from '../repositories'
+
 import {
   streamFromMinio,
   uploadThumbnailToMinio,
@@ -22,7 +23,9 @@ import {
   getVideoMetadata,
   transcodeVideo,
   generateVideoThumbnail,
+  renderFirstPage,
 } from '../services'
+
 import {
   MESSAGES,
   THUMBNAIL_WIDTH,
@@ -31,6 +34,7 @@ import {
   VIDEO_RESOLUTIONS,
   VIDEO_THUMBNAIL_TIMESTAMP_SEC,
 } from '../constants'
+
 import type { AssetJobData, VideoRendition } from '../types'
 import type { Channel, ConsumeMessage } from 'amqplib'
 
@@ -43,13 +47,12 @@ function streamToBuffer(readable: NodeJS.ReadableStream): Promise<Buffer> {
   })
 }
 
-// Image pipeline
-async function processImage(data: AssetJobData): Promise<void> {
-  const stream = await streamFromMinio(data.bucketPath)
-  const buffer = await streamToBuffer(stream)
-  const meta = await sharp(buffer).metadata()
-
-  const thumbnail = await sharp(buffer)
+// Every asset type gets a same-sized, same-quality thumbnail.
+async function buildAndUploadThumbnail(
+  sourceBuffer: Buffer,
+  assetId: string
+): Promise<string> {
+  const thumbnail = await sharp(sourceBuffer)
     .resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, {
       fit: 'cover',
       position: 'centre',
@@ -57,7 +60,16 @@ async function processImage(data: AssetJobData): Promise<void> {
     .jpeg({ quality: THUMBNAIL_QUALITY })
     .toBuffer()
 
-  const thumbnailPath = await uploadThumbnailToMinio(thumbnail, data.assetId)
+  return uploadThumbnailToMinio(thumbnail, assetId)
+}
+
+// Image
+async function processImage(data: AssetJobData): Promise<void> {
+  const stream = await streamFromMinio(data.bucketPath)
+  const buffer = await streamToBuffer(stream)
+  const meta = await sharp(buffer).metadata()
+
+  const thumbnailPath = await buildAndUploadThumbnail(buffer, data.assetId)
 
   await assetRepository.updateAfterProcessing(data.assetId, {
     thumbnailPath,
@@ -67,7 +79,7 @@ async function processImage(data: AssetJobData): Promise<void> {
   })
 }
 
-// Video pipeline
+// Video
 async function processVideo(data: AssetJobData): Promise<void> {
   const ext = path.extname(data.originalName) || '.mp4'
   const stream = await streamFromMinio(data.bucketPath)
@@ -89,7 +101,7 @@ async function processVideo(data: AssetJobData): Promise<void> {
     const thumbFullPath = path.join(thumbFolder, thumbFilename)
     tempFiles.push(thumbFullPath)
     const thumbBuffer = await fs.readFile(thumbFullPath)
-    const thumbnailPath = await uploadThumbnailToMinio(
+    const thumbnailPath = await buildAndUploadThumbnail(
       thumbBuffer,
       data.assetId
     )
@@ -124,6 +136,31 @@ async function processVideo(data: AssetJobData): Promise<void> {
   }
 }
 
+// PDF
+async function processDocument(data: AssetJobData): Promise<void> {
+  const stream = await streamFromMinio(data.bucketPath)
+  const buffer = await streamToBuffer(stream)
+  const ext = path.extname(data.originalName) || '.pdf'
+  const inputPath = await writeBufferToTempFile(buffer, ext)
+
+  try {
+    const pageBuffer = await renderFirstPage(inputPath)
+    const thumbnailPath = await buildAndUploadThumbnail(
+      pageBuffer,
+      data.assetId
+    )
+
+    await assetRepository.updateAfterProcessing(data.assetId, {
+      thumbnailPath,
+      width: undefined,
+      height: undefined,
+      status: 'ready',
+    })
+  } finally {
+    await cleanupFiles([inputPath])
+  }
+}
+
 // Consumer
 async function handleMessage(
   msg: ConsumeMessage,
@@ -146,6 +183,8 @@ async function handleMessage(
       await processImage(data)
     } else if (category === 'video') {
       await processVideo(data)
+    } else if (data.mimeType === 'application/pdf') {
+      await processDocument(data)
     } else {
       await assetRepository.updateStatus(data.assetId, 'ready')
     }
