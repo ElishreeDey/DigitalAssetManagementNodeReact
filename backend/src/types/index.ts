@@ -20,4 +20,12 @@ export type {
   VideoRendition,
 } from './assetTypes'
 
-export type { TeamMemberRole, ShareScope, SharePermission } from './teamTypes'
+export type {
+  TeamMemberRole,
+  ShareScope,
+  SharePermission,
+  TeamIdParams,
+  TeamMemberParams,
+  CreateTeamBody,
+  AddTeamMemberBody,
+} from './teamTypes'

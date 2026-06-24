@@ -87,4 +87,9 @@ Team.hasMany(TeamMember, { foreignKey: 'teamId', as: 'members' })
 //A TeamMember row belongs to exactly one Team.
 TeamMember.belongsTo(Team, { foreignKey: 'teamId', as: 'team' })
 
+// One User can belong to many Teams.
+AuthUser.hasMany(TeamMember, { foreignKey: 'userId', as: 'teamMemberships' })
+// A TeamMember row belongs to exactly one User.
+TeamMember.belongsTo(AuthUser, { foreignKey: 'userId', as: 'user' })
+
 export default TeamMember

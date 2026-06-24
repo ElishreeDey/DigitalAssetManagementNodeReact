@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : index
- * Description : Barrel — re-exports all controller functions.
+ * Description : Barrel index entry point for all controller functions.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
@@ -26,3 +26,12 @@ export {
   downloadAsset,
   deleteAsset,
 } from './assetController'
+
+export {
+  createTeam,
+  listTeams,
+  listMembers,
+  addMember,
+  removeMember,
+  deleteTeam,
+} from './teamController'

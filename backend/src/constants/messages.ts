@@ -80,4 +80,23 @@ export const MESSAGES = {
   ASSET_DELETE_FAILED_MSG: 'Failed to delete asset',
   ASSET_DELETE_SUCCESS_MSG: 'Asset deleted successfully',
   ASSET_STREAM_FAILED_MSG: 'Failed to stream asset',
+
+  // Team CRUD
+  TEAM_NAME_REQUIRED_MSG: 'Team name is required',
+  TEAM_NOT_FOUND_MSG: 'Team not found',
+  TEAM_CREATE_FAILED_MSG: 'Failed to create team',
+  TEAM_FETCH_FAILED_MSG: 'Failed to fetch teams',
+  TEAM_NOT_A_MEMBER_MSG: 'You are not a member of this team',
+  TEAM_OWNER_ONLY_MSG: 'Only a team owner can perform this action',
+  TEAM_DELETE_FAILED_MSG: 'Failed to delete team',
+  TEAM_DELETE_SUCCESS_MSG: 'Team deleted successfully',
+
+  // Team membership
+  TEAM_MEMBERS_FETCH_FAILED_MSG: 'Failed to fetch team members',
+  TEAM_MEMBER_ADD_FAILED_MSG: 'Failed to add team member',
+  TEAM_MEMBER_REMOVE_FAILED_MSG: 'Failed to remove team member',
+  TEAM_MEMBER_ALREADY_EXISTS_MSG: 'User is already a member of this team',
+  TEAM_MEMBER_NOT_FOUND_MSG: 'Team member not found',
+  TEAM_MEMBER_REMOVE_SUCCESS_MSG: 'Team member removed successfully',
+  TEAM_LAST_OWNER_MSG: 'Cannot remove the only owner of a team',
 } as const
