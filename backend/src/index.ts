@@ -15,6 +15,7 @@ import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 
 import sequelize, { keys, ensureBucket } from './config'
+import './models' // every model
 import router from './routes'
 import { apiRateLimiter, errorMiddleware } from './middleware'
 import {

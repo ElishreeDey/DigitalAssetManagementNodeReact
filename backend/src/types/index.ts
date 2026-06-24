@@ -8,7 +8,9 @@
  */
 
 export type { UserCreateBody, UserUpdateBody } from './userTypes'
+
 export type { UserRole, JwtPayload, RegisterBody, LoginBody } from './authTypes'
+
 export type {
   AssetStatus,
   AssetJobData,
@@ -17,3 +19,5 @@ export type {
   AssetListQuery,
   VideoRendition,
 } from './assetTypes'
+
+export type { TeamMemberRole, ShareScope, SharePermission } from './teamTypes'
