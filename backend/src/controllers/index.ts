@@ -21,10 +21,15 @@ export {
   uploadMiddleware,
   uploadAssets,
   listAssets,
+  listSharedAssets,
   streamAsset,
   streamThumbnail,
   downloadAsset,
   deleteAsset,
+  shareAsset,
+  listAssetShares,
+  deleteShare,
+  updateSharePermission,
 } from './assetController'
 
 export {

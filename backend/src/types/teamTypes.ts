@@ -9,8 +9,6 @@
 
 export type TeamMemberRole = 'owner' | 'member'
 
-export type ShareScope = 'team' | 'user'
-
 export type SharePermission = 'view' | 'download'
 
 export type TeamIdParams = { id: string } //team table
@@ -20,3 +18,12 @@ export type TeamMemberParams = { id: string; userId: string } //team member tabl
 export type CreateTeamBody = { name: string }
 
 export type AddTeamMemberBody = { email: string }
+
+export type ShareIdParams = { id: string; shareId: string } //assetId + shareId
+
+export type CreateShareBody = {
+  teamId: string
+  permission?: SharePermission // defaults to 'view'
+}
+
+export type UpdateShareBody = { permission: SharePermission }

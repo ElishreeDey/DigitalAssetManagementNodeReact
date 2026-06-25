@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetController
- * Description : Express request handlers for asset upload, listing, streaming, download, and deletion.
+ * Description : assetController for asset upload, listing, streaming, download, and deletion.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
@@ -9,11 +9,11 @@
 
 import { Request, Response, NextFunction } from 'express'
 import multer from 'multer'
-import { assetRepository } from '../repositories'
+import { assetRepository, teamRepository } from '../repositories'
 import { getRabbitChannel, ASSET_QUEUE } from '../config'
 
 import {
-  generateStoredName /*generateStoreName e.g: Inut as "bird.jpg" output as "4f83a92d-11.jpg"*/,
+  generateStoredName /*generateStoreName e.g: Input as "bird.jpg" output as "4f83a92d-11.jpg"*/,
   uploadToMinio,
   deleteFromMinio,
   generateTags,
@@ -29,7 +29,13 @@ import {
   UPLOAD_ACCEPTED_MIME_REGEX,
 } from '../constants'
 
-import type { AssetJobData, AssetListQuery } from '../types'
+import type {
+  AssetJobData,
+  AssetListQuery,
+  ShareIdParams,
+  CreateShareBody,
+  UpdateShareBody,
+} from '../types'
 
 type IdParams = { id: string }
 
@@ -133,6 +139,28 @@ export const listAssets = async (
   }
 }
 
+// Assets shared with the current user via any team they belong to.
+// GET /assets/shared-with-curloginuser
+export const listSharedAssets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const query = req.query as AssetListQuery
+
+    const assets = await assetRepository.listSharedWithUser(
+      query,
+      req.user!.userId
+    )
+
+    res.status(200).json({ assets })
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ASSET_SHARED_LIST_FAILED_MSG
+    next(error)
+  }
+}
+
 // It will open the asset fullsize when you click one of them in asset galary.
 export const streamAsset = async (
   req: Request<IdParams>,
@@ -161,7 +189,7 @@ export const streamAsset = async (
     res.setHeader('Content-Length', asset.size)
     res.setHeader('Cache-Control', 'private, max-age=3600')
 
-    // Required for serving assets across different frontend origins.
+    // Required for assets across different origins.
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
 
     stream.pipe(res)
@@ -278,6 +306,171 @@ export const deleteAsset = async (
     res.status(200).json({ message: MESSAGES.ASSET_DELETE_SUCCESS_MSG })
   } catch (error) {
     ;(error as Error).message = MESSAGES.ASSET_DELETE_FAILED_MSG
+    next(error)
+  }
+}
+
+// Shares an asset with a team or an individual user. Only the asset owner can do this.
+// POST /assets/:id/share
+export const shareAsset = async (
+  req: Request<IdParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { teamId, permission } = req.body as CreateShareBody
+
+    const asset = await assetRepository.findById(req.params.id)
+    if (!asset) {
+      return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
+
+    if (asset.uploadedBy !== req.user!.userId) {
+      return res
+        .status(403)
+        .json({ message: MESSAGES.ASSET_SHARE_OWNER_ONLY_MSG })
+    }
+
+    if (!teamId?.trim()) {
+      return res
+        .status(400)
+        .json({ message: MESSAGES.ASSET_SHARE_TEAM_ID_REQUIRED_MSG })
+    }
+
+    const team = await teamRepository.findById(teamId.trim())
+    if (!team) {
+      return res.status(404).json({ message: MESSAGES.TEAM_NOT_FOUND_MSG })
+    }
+
+    const existingShare = await assetRepository.findShareByTeam(
+      asset.id,
+      team.id
+    )
+    if (existingShare) {
+      return res
+        .status(409)
+        .json({ message: MESSAGES.ASSET_SHARE_ALREADY_EXISTS_MSG })
+    }
+
+    const share = await assetRepository.createShare({
+      assetId: asset.id,
+      teamId: team.id,
+      permission: permission ?? 'view',
+      createdBy: req.user!.userId,
+    })
+
+    res.status(201).json(share)
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ASSET_SHARE_CREATE_FAILED_MSG
+    next(error)
+  }
+}
+
+// Asset owner lists everyone an asset has been shared with.
+// GET /assets/:id/shares
+export const listAssetShares = async (
+  req: Request<IdParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const asset = await assetRepository.findById(req.params.id)
+    if (!asset) {
+      return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
+
+    if (asset.uploadedBy !== req.user!.userId) {
+      return res
+        .status(403)
+        .json({ message: MESSAGES.ASSET_SHARE_OWNER_ONLY_MSG })
+    }
+
+    const shares = await assetRepository.listShares(asset.id)
+    res.status(200).json(shares)
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ASSET_SHARE_FETCH_FAILED_MSG
+    next(error)
+  }
+}
+
+// Asset owner can delete the share.
+// DELETE /assets/:id/shares/:shareId
+export const deleteShare = async (
+  req: Request<ShareIdParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id: assetId, shareId } = req.params
+
+    const asset = await assetRepository.findById(assetId)
+    if (!asset) {
+      return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
+
+    if (asset.uploadedBy !== req.user!.userId) {
+      return res
+        .status(403)
+        .json({ message: MESSAGES.ASSET_SHARE_OWNER_ONLY_MSG })
+    }
+
+    const share = await assetRepository.findShareById(assetId, shareId)
+    if (!share) {
+      return res
+        .status(404)
+        .json({ message: MESSAGES.ASSET_SHARE_NOT_FOUND_MSG })
+    }
+
+    await assetRepository.deleteShare(assetId, shareId)
+    res.status(200).json({ message: MESSAGES.ASSET_SHARE_REMOVE_SUCCESS_MSG })
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ASSET_SHARE_REMOVE_FAILED_MSG
+    next(error)
+  }
+}
+
+// Asset owner can updates an existing share's permission level.
+// PATCH /assets/:id/shares/:shareId
+export const updateSharePermission = async (
+  req: Request<ShareIdParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id: assetId, shareId } = req.params
+    const { permission } = req.body as UpdateShareBody
+
+    if (permission !== 'view' && permission !== 'download') {
+      return res
+        .status(400)
+        .json({ message: MESSAGES.ASSET_SHARE_PERMISSION_REQUIRED_MSG })
+    }
+
+    const asset = await assetRepository.findById(assetId)
+    if (!asset) {
+      return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
+
+    if (asset.uploadedBy !== req.user!.userId) {
+      return res
+        .status(403)
+        .json({ message: MESSAGES.ASSET_SHARE_OWNER_ONLY_MSG })
+    }
+
+    const share = await assetRepository.updateSharePermission(
+      assetId,
+      shareId,
+      permission
+    )
+    if (!share) {
+      return res
+        .status(404)
+        .json({ message: MESSAGES.ASSET_SHARE_NOT_FOUND_MSG })
+    }
+
+    res.status(200).json(share)
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ASSET_SHARE_UPDATE_FAILED_MSG
     next(error)
   }
 }

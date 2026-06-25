@@ -82,6 +82,20 @@ export const MESSAGES = {
   ASSET_STREAM_FAILED_MSG: 'Failed to stream asset',
   ASSET_ACCESS_DENIED_MSG: 'You do not have access to this asset',
 
+  // Asset sharing
+  ASSET_SHARE_OWNER_ONLY_MSG: 'Only the asset owner can manage sharing',
+  ASSET_SHARE_TEAM_ID_REQUIRED_MSG: 'Team id is required',
+  ASSET_SHARE_ALREADY_EXISTS_MSG: 'Asset is already shared with this target',
+  ASSET_SHARE_CREATE_FAILED_MSG: 'Failed to share asset',
+  ASSET_SHARE_FETCH_FAILED_MSG: 'Failed to fetch asset shares',
+  ASSET_SHARE_NOT_FOUND_MSG: 'Share not found',
+  ASSET_SHARE_REMOVE_FAILED_MSG: 'Failed to remove sharing access',
+  ASSET_SHARE_REMOVE_SUCCESS_MSG: 'Sharing access removed successfully',
+  ASSET_SHARE_PERMISSION_REQUIRED_MSG:
+    "Permission must be 'view' or 'download'",
+  ASSET_SHARE_UPDATE_FAILED_MSG: 'Failed to update share',
+  ASSET_SHARED_LIST_FAILED_MSG: 'Failed to fetch assets shared with you',
+
   // Team CRUD
   TEAM_NAME_REQUIRED_MSG: 'Team name is required',
   TEAM_NOT_FOUND_MSG: 'Team not found',

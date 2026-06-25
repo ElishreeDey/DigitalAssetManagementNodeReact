@@ -22,10 +22,12 @@ export type {
 
 export type {
   TeamMemberRole,
-  ShareScope,
   SharePermission,
   TeamIdParams,
   TeamMemberParams,
   CreateTeamBody,
   AddTeamMemberBody,
+  ShareIdParams,
+  CreateShareBody,
+  UpdateShareBody,
 } from './teamTypes'
