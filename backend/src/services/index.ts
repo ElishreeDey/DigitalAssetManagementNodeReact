@@ -7,7 +7,6 @@
  ****************************************************************************************************************************
  */
 
-export { UserService } from './userService'
 export { authService } from './authService'
 
 export {

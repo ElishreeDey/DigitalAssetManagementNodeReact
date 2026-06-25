@@ -8,14 +8,9 @@
  */
 
 export const MESSAGES = {
-  // User CRUD
-  USER_CREATE_FAILED_MSG: 'Failed to create user',
-  USER_FETCH_FAILED_MSG: 'Failed to fetch users',
-  USER_FETCH_SINGLE_FAILED_MSG: 'Failed to fetch user',
+  // User
   USER_NOT_FOUND_MSG: 'User not found',
-  USER_UPDATE_FAILED_MSG: 'Failed to update user',
-  USER_DELETE_FAILED_MSG: 'Failed to delete user',
-  USER_DELETE_SUCCESS_MSG: 'User deleted successfully',
+  ACCOUNTS_FETCH_FAILED_MSG: 'Failed to fetch accounts',
 
   // Auth — token
   TOKEN_MISSING_MSG: 'Token missing',

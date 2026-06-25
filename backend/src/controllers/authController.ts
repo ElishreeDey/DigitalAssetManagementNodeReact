@@ -138,3 +138,19 @@ export const logout = (_req: Request, res: Response) => {
 export const curLoggedInUser = (req: Request, res: Response) => {
   res.status(200).json(req.user)
 }
+
+// list of every registered account.
+// GET /accounts
+export const listAccounts = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const accounts = await authUserRepository.listDirectory()
+    res.status(200).json(accounts)
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.ACCOUNTS_FETCH_FAILED_MSG
+    next(error)
+  }
+}

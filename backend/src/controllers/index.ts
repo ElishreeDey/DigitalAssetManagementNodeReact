@@ -7,15 +7,13 @@
  ****************************************************************************************************************************
  */
 
-export { register, login, logout, curLoggedInUser } from './authController'
-
 export {
-  createUser,
-  getUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-} from './userController'
+  register,
+  login,
+  logout,
+  curLoggedInUser,
+  listAccounts,
+} from './authController'
 
 export {
   uploadMiddleware,
