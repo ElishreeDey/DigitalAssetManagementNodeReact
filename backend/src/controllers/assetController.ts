@@ -13,15 +13,16 @@ import { assetRepository } from '../repositories'
 import { getRabbitChannel, ASSET_QUEUE } from '../config'
 
 import {
-  generateStoredName,
+  generateStoredName /*generateStoreName e.g: Inut as "bird.jpg" output as "4f83a92d-11.jpg"*/,
   uploadToMinio,
   deleteFromMinio,
   generateTags,
-  streamFromMinio,
+  streamFromMinio /*Returns a readable stream for a stored asset for view/thumbnail/download */,
 } from '../services'
 
 import { MESSAGES } from '../constants'
 
+/*This constants are from appConfig file present in constant folder*/
 import {
   UPLOAD_MAX_FILE_SIZE_BYTES,
   UPLOAD_MAX_FILES,
@@ -34,7 +35,7 @@ type IdParams = { id: string }
 
 // "MULTER" is used asset file upload without it Express can't read file data.
 const multerUpload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.memoryStorage() /*store file in system's temp folder */,
   limits: { fileSize: UPLOAD_MAX_FILE_SIZE_BYTES, files: UPLOAD_MAX_FILES },
   fileFilter: (_req, file, cb) => {
     if (UPLOAD_ACCEPTED_MIME_REGEX.test(file.mimetype)) cb(null, true)
@@ -145,6 +146,15 @@ export const streamAsset = async (
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
     }
 
+    const allowed = await assetRepository.canAccess(
+      asset,
+      req.user!.userId,
+      'view'
+    )
+    if (!allowed) {
+      return res.status(403).json({ message: MESSAGES.ASSET_ACCESS_DENIED_MSG })
+    }
+
     const stream = await streamFromMinio(asset.bucketPath)
 
     res.setHeader('Content-Type', asset.mimeType)
@@ -174,6 +184,15 @@ export const streamThumbnail = async (
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
     }
 
+    const allowed = await assetRepository.canAccess(
+      asset,
+      req.user!.userId,
+      'view'
+    )
+    if (!allowed) {
+      return res.status(403).json({ message: MESSAGES.ASSET_ACCESS_DENIED_MSG })
+    }
+
     const path = asset.thumbnailPath ?? asset.bucketPath
     const mimeType = asset.thumbnailPath ? 'image/jpeg' : asset.mimeType
 
@@ -190,7 +209,7 @@ export const streamThumbnail = async (
   }
 }
 
-// Downloads the original asset and increments its download count.
+// Downloads the original asset and increments download count.
 export const downloadAsset = async (
   req: Request<IdParams>,
   res: Response,
@@ -201,6 +220,15 @@ export const downloadAsset = async (
 
     if (!asset) {
       return res.status(404).json({ message: MESSAGES.ASSET_NOT_FOUND_MSG })
+    }
+
+    const allowed = await assetRepository.canAccess(
+      asset,
+      req.user!.userId,
+      'download'
+    )
+    if (!allowed) {
+      return res.status(403).json({ message: MESSAGES.ASSET_ACCESS_DENIED_MSG })
     }
 
     await assetRepository.incrementDownloadCount(asset.id)

@@ -80,6 +80,7 @@ export const MESSAGES = {
   ASSET_DELETE_FAILED_MSG: 'Failed to delete asset',
   ASSET_DELETE_SUCCESS_MSG: 'Asset deleted successfully',
   ASSET_STREAM_FAILED_MSG: 'Failed to stream asset',
+  ASSET_ACCESS_DENIED_MSG: 'You do not have access to this asset',
 
   // Team CRUD
   TEAM_NAME_REQUIRED_MSG: 'Team name is required',
