@@ -39,7 +39,7 @@ export const ASSET_QUEUE_NAME = 'asset-processing'
 
 // File upload limit max size, max number of upload, file types allowed for upload.
 export const UPLOAD_MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
-export const UPLOAD_MAX_FILES = 20
+export const UPLOAD_MAX_FILES = 10
 export const UPLOAD_ACCEPTED_MIME_REGEX = /^(image|video)\/|^application\/pdf$/
 
 // Thumbnail generation

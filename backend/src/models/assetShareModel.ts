@@ -1,8 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : assetShareModel
- * Description : DB model for 'asset_shares' — grants access to an asset.
- *               An asset is realted to a team (scope='team') Or a single user (scope='user')
+ * Description : DB model for 'asset_shares' — grants every member of a team access to an asset.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-24
  ****************************************************************************************************************************
@@ -22,9 +21,9 @@ import { Asset } from './assetModel'
 import { Team } from './teamModel'
 import { AuthUser } from './authUserModel'
 
-import type { ShareScope, SharePermission } from '../types'
+import type { SharePermission } from '../types'
 
-// as its a join table it holds assetId, teamId and userId
+// as its a join table it holds assetId and teamId
 export class AssetShare extends Model<
   InferAttributes<AssetShare>,
   InferCreationAttributes<AssetShare>
@@ -34,14 +33,12 @@ export class AssetShare extends Model<
   declare updatedAt: CreationOptional<Date>
 
   declare assetId: string
-  declare scope: ShareScope
-  declare teamId: string | null
-  declare sharedWithUserId: string | null
+  declare teamId: string
   declare permission: SharePermission
   declare createdBy: string // userId of the asset owner who created the share
 }
 
-// TeamMember table initialization.
+// AssetShare table initialization.
 AssetShare.init(
   {
     id: {
@@ -54,21 +51,10 @@ AssetShare.init(
       allowNull: false,
       references: { model: Asset, key: 'id' },
     },
-    scope: {
-      type: DataTypes.ENUM('team', 'user'),
-      allowNull: false,
-    },
     teamId: {
       type: DataTypes.UUID,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
       references: { model: Team, key: 'id' },
-    },
-    sharedWithUserId: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      defaultValue: null,
-      references: { model: AuthUser, key: 'id' },
     },
     permission: {
       type: DataTypes.ENUM('view', 'download'),
@@ -88,38 +74,10 @@ AssetShare.init(
     modelName: 'AssetShare',
     tableName: 'asset_shares',
     timestamps: true,
-    validate: {
-      scopeMatchesTarget() {
-        // If scope='team' must carry teamId only
-        if (this.scope === 'team' && (!this.teamId || this.sharedWithUserId)) {
-          throw new Error(
-            "scope='team' requires teamId and no sharedWithUserId"
-          )
-        }
-        // If scope='user' must carry sharedWithUserId only
-        if (this.scope === 'user' && (!this.sharedWithUserId || this.teamId)) {
-          throw new Error(
-            "scope='user' requires sharedWithUserId and no teamId"
-          )
-        }
-      },
-    },
     indexes: [
       { fields: ['assetId'] },
       { fields: ['teamId'] },
-      { fields: ['sharedWithUserId'] },
-
-      {
-        fields: ['assetId', 'teamId'],
-        unique: true,
-        where: { scope: 'team' },
-      },
-
-      {
-        fields: ['assetId', 'sharedWithUserId'],
-        unique: true,
-        where: { scope: 'user' },
-      },
+      { fields: ['assetId', 'teamId'], unique: true },
     ],
   }
 )
@@ -129,5 +87,7 @@ Asset.hasMany(AssetShare, { foreignKey: 'assetId', as: 'shares' })
 
 //Each AssetShare belongs to exactly one Asset.
 AssetShare.belongsTo(Asset, { foreignKey: 'assetId', as: 'asset' })
+
+AssetShare.belongsTo(Team, { foreignKey: 'teamId', as: 'team' })
 
 export default AssetShare

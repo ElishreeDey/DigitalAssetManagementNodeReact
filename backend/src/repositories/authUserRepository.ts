@@ -26,4 +26,12 @@ export class AuthUserRepository {
       unknown
     >)
   }
+
+  async listDirectory(): Promise<{ id: string; email: string }[]> {
+    const users = await AuthUser.findAll({
+      attributes: ['id', 'email'],
+      order: [['email', 'ASC']],
+    })
+    return users.map((u) => ({ id: u.id, email: u.email }))
+  }
 }

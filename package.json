@@ -1,5 +1,5 @@
 {
-  "name": "nodetsexpressreactsequelizecrud",
+  "name": "digitalassetmanagementnodereact",
   "version": "1.0.0",
   "description": "",
   "//private": "Must be true to use npm workspaces — prevents accidental publish of the monorepo root",
@@ -28,15 +28,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD.git"
+    "url": "git+https://github.com/ElishreeDey/DigitalAssetManagementNodeReact.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD/issues"
+    "url": "https://github.com/ElishreeDey/DigitalAssetManagementNodeReact/issues"
   },
-  "homepage": "https://github.com/ElishreeDey/NodeTSExpressReactSequelizeCRUD#readme",
+  "homepage": "https://github.com/ElishreeDey/DigitalAssetManagementNodeReact#readme",
   "overrides": {
     "shell-quote": "^1.8.4"
   },

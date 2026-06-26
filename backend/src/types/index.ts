@@ -7,8 +7,6 @@
  ****************************************************************************************************************************
  */
 
-export type { UserCreateBody, UserUpdateBody } from './userTypes'
-
 export type { UserRole, JwtPayload, RegisterBody, LoginBody } from './authTypes'
 
 export type {
@@ -22,10 +20,12 @@ export type {
 
 export type {
   TeamMemberRole,
-  ShareScope,
   SharePermission,
   TeamIdParams,
   TeamMemberParams,
   CreateTeamBody,
   AddTeamMemberBody,
+  ShareIdParams,
+  CreateShareBody,
+  UpdateShareBody,
 } from './teamTypes'

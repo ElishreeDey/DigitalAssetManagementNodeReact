@@ -7,7 +7,6 @@
  ****************************************************************************************************************************
  */
 
-export { default } from './userModel'
 export { default as AuthUser } from './authUserModel'
 export { Asset } from './assetModel'
 export { Team } from './teamModel'

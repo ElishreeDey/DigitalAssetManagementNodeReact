@@ -8,13 +8,12 @@
  */
 
 import { Op } from 'sequelize'
-import { Asset, AssetShare, TeamMember, AuthUser, Team } from '../models'
+import { Asset, AssetShare, TeamMember, Team } from '../models'
 import type {
   AssetCreateData,
   AssetListQuery,
   AssetProcessingResult,
   AssetStatus,
-  ShareScope,
   SharePermission,
 } from '../types'
 
@@ -32,22 +31,16 @@ export class AssetRepository {
     return this.findFiltered(query, { uploadedBy: userId })
   }
 
-  // Assets shared directly with this user, or with any team they belong to
+  // Assets shared with any team this user belongs to.
   async listSharedWithUser(
     query: AssetListQuery,
     userId: string
   ): Promise<Asset[]> {
     const memberships = await TeamMember.findAll({ where: { userId } })
     const teamIds = memberships.map((m) => m.teamId)
+    if (!teamIds.length) return []
 
-    const shares = await AssetShare.findAll({
-      where: {
-        [Op.or]: [
-          { scope: 'user', sharedWithUserId: userId },
-          ...(teamIds.length ? [{ scope: 'team', teamId: teamIds }] : []),
-        ],
-      },
-    })
+    const shares = await AssetShare.findAll({ where: { teamId: teamIds } })
 
     const assetIds = [...new Set(shares.map((s) => s.assetId))]
     if (!assetIds.length) return []
@@ -119,7 +112,7 @@ export class AssetRepository {
     return asset
   }
 
-  // This is for who can have access to the Asset(Uploaded himself or a team member). View access can view or download
+  // This is for who can have access to the Asset (uploaded himself or a team member). View access can view or download
   async canAccess(
     asset: Asset,
     userId: string,
@@ -127,56 +120,39 @@ export class AssetRepository {
   ): Promise<boolean> {
     if (asset.uploadedBy === userId) return true
 
-    const satisfies = (granted: SharePermission) =>
-      required === 'view' || granted === 'download'
-
-    const userShare = await AssetShare.findOne({
-      where: { assetId: asset.id, scope: 'user', sharedWithUserId: userId },
-    })
-    if (userShare && satisfies(userShare.permission)) return true
-
     const memberships = await TeamMember.findAll({ where: { userId } })
     const teamIds = memberships.map((m) => m.teamId)
     if (!teamIds.length) return false
 
     const teamShare = await AssetShare.findOne({
-      where: { assetId: asset.id, scope: 'team', teamId: teamIds },
+      where: { assetId: asset.id, teamId: teamIds },
     })
-    return !!teamShare && satisfies(teamShare.permission)
+    if (!teamShare) return false
+
+    return required === 'view' || teamShare.permission === 'download'
   }
 
-  async findShareByTarget(
+  async findShareByTeam(
     assetId: string,
-    scope: ShareScope,
-    targetId: string
+    teamId: string
   ): Promise<AssetShare | null> {
-    return AssetShare.findOne({
-      where:
-        scope === 'team'
-          ? { assetId, scope, teamId: targetId }
-          : { assetId, scope, sharedWithUserId: targetId },
-    })
+    return AssetShare.findOne({ where: { assetId, teamId } })
   }
 
   async createShare(data: {
     assetId: string
-    scope: ShareScope
-    teamId: string | null
-    sharedWithUserId: string | null
+    teamId: string
     permission: SharePermission
     createdBy: string
   }): Promise<AssetShare> {
     return AssetShare.create(data)
   }
 
-  // Shares for an asset, with the team name or shared user's email for display in the UI.
+  // Shares for an asset, with the team name for display in the UI.
   async listShares(assetId: string): Promise<AssetShare[]> {
     return AssetShare.findAll({
       where: { assetId },
-      include: [
-        { model: Team, as: 'team', attributes: ['id', 'name'] },
-        { model: AuthUser, as: 'sharedWithUser', attributes: ['id', 'email'] },
-      ],
+      include: [{ model: Team, as: 'team', attributes: ['id', 'name'] }],
       order: [['createdAt', 'DESC']],
     })
   }
