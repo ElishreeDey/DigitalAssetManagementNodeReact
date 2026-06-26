@@ -12,6 +12,13 @@ export const ASSET_ENDPOINTS = {
   LIST: '/assets',
 } as const
 
+export const ASSET_ERRORS = {
+  LIST_LOAD_FAILED: 'Failed to load assets',
+  INVALID_TYPE: 'Only images, videos, and PDFs are accepted',
+  FILE_TOO_LARGE: 'File exceeds the 50 MB limit',
+  UPLOAD_FAILED: 'Upload failed. Please try again.',
+} as const
+
 const BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? ''
 
 export const assetUrl = {

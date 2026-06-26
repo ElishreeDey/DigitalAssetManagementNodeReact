@@ -9,20 +9,22 @@
 
 import { useState, useCallback } from 'react'
 import { assetService } from '../services'
+import { ASSET_ERRORS } from '../constants'
 import type { AssetItem, UploadFileState } from '../types'
 
 const MAX_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
 const ACCEPTED_MIME = /^(image|video)\/|^application\/pdf$/
 
+// validateFile function first check two things file-type is img/video/pdf and max-size with in specified
 function validateFile(file: File): string | null {
-  if (!ACCEPTED_MIME.test(file.type))
-    return 'Only images, videos, and PDFs are accepted'
+  if (!ACCEPTED_MIME.test(file.type)) return ASSET_ERRORS.INVALID_TYPE
 
-  if (file.size > MAX_SIZE_BYTES) return 'File exceeds the 50 MB limit'
+  if (file.size > MAX_SIZE_BYTES) return ASSET_ERRORS.FILE_TOO_LARGE
 
   return null
 }
 
+// useUpload is custom hook defined here it owns the complete upload lifecycle.
 export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
   const [files, setFiles] = useState<UploadFileState[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -63,6 +65,7 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
     setUploadError(null)
 
     try {
+      //assetService.upload() this is where Backend is called.
       const uploaded = await assetService.upload(
         valid.map((f) => f.file),
         (percent) =>
@@ -76,11 +79,11 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
         if (f.preview) URL.revokeObjectURL(f.preview)
       })
 
-      setFiles([])
+      setFiles([]) // once upload is done upload list becomes empty.
       onSuccess(uploaded)
     } catch (err) {
       const msg =
-        err instanceof Error ? err.message : 'Upload failed. Please try again.'
+        err instanceof Error ? err.message : ASSET_ERRORS.UPLOAD_FAILED
 
       setUploadError(msg)
 

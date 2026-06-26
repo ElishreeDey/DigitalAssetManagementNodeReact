@@ -9,3 +9,4 @@
 
 export type * from './auth'
 export type * from './asset'
+export type * from './team'
