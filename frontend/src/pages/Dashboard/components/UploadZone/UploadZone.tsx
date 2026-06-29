@@ -10,7 +10,7 @@
 
 import { useRef, useState } from 'react'
 import { useUpload } from '../../../../hooks'
-import { uploadIcon } from '../../../../assets'
+import { uploadIcon, pdfIcon, playIcon, removeIcon } from '../../../../assets'
 import type { AssetItem } from '../../../../types'
 import './UploadZone.css'
 
@@ -114,9 +114,13 @@ export default function UploadZone({ onUploaded }: Props) {
                 {f.preview ? (
                   <img src={f.preview} alt="" className="queue-thumb" />
                 ) : f.file.type === 'application/pdf' ? (
-                  <div className="queue-thumb queue-thumb--pdf">📄</div>
+                  <div className="queue-thumb queue-thumb--pdf">
+                    <img src={pdfIcon} alt="" />
+                  </div>
                 ) : (
-                  <div className="queue-thumb queue-thumb--video">▶</div>
+                  <div className="queue-thumb queue-thumb--video">
+                    <img src={playIcon} alt="" />
+                  </div>
                 )}
                 <div className="queue-meta">
                   <span className="queue-name">{f.file.name}</span>
@@ -140,7 +144,7 @@ export default function UploadZone({ onUploaded }: Props) {
                   onClick={() => removeFile(i)}
                   aria-label={`Remove ${f.file.name}`}
                 >
-                  ×
+                  <img src={removeIcon} alt="" />
                 </button>
               </li>
             ))}

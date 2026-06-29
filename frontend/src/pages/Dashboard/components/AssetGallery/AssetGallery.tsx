@@ -8,6 +8,7 @@
  */
 
 import { assetUrl } from '../../../../constants'
+import { trashIcon, downloadIcon, pdfIcon, playIcon } from '../../../../assets'
 import type { AssetItem } from '../../../../types'
 import './AssetGallery.css'
 
@@ -108,7 +109,12 @@ export default function AssetGallery({
               (asset.mimeType.startsWith('video/') ||
                 asset.mimeType === 'application/pdf') ? (
                 <div className="asset-card-placeholder">
-                  {asset.mimeType === 'application/pdf' ? '📄' : '▶'}
+                  <img
+                    src={
+                      asset.mimeType === 'application/pdf' ? pdfIcon : playIcon
+                    }
+                    alt=""
+                  />
                 </div>
               ) : (
                 <img
@@ -130,7 +136,7 @@ export default function AssetGallery({
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Download"
                 >
-                  ⬇
+                  <img src={downloadIcon} alt="" width={16} height={16} />
                 </a>
                 <button
                   type="button"
@@ -141,7 +147,7 @@ export default function AssetGallery({
                   }}
                   aria-label="Delete"
                 >
-                  🗑
+                  <img src={trashIcon} alt="" width={16} height={16} />
                 </button>
               </div>
             </div>

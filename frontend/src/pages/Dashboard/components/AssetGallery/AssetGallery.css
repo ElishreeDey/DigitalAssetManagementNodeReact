@@ -147,8 +147,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  color: var(--text-muted);
+}
+
+.asset-card-placeholder img {
+  width: 32px;
+  height: 32px;
 }
 
 .asset-status {

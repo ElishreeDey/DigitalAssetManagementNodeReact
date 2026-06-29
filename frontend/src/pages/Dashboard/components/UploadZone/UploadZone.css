@@ -131,8 +131,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  color: var(--text-muted);
+}
+
+.queue-thumb--pdf img,
+.queue-thumb--video img {
+  width: 20px;
+  height: 20px;
 }
 
 .queue-meta {
@@ -180,8 +184,6 @@
 .queue-remove {
   background: none;
   border: none;
-  font-size: 18px;
-  color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
   width: 26px;
@@ -190,6 +192,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.queue-remove img {
+  width: 14px;
+  height: 14px;
 }
 
 .queue-remove:hover {

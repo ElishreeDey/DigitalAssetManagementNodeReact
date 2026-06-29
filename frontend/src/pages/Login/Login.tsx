@@ -8,7 +8,7 @@
  */
 
 import { useLoginForm } from '../../hooks'
-import { eyeIcon, eyeOffIcon } from '../../assets'
+import { eyeIcon, eyeOffIcon, warningIcon } from '../../assets'
 import './Login.css'
 
 type LoginProps = {
@@ -54,7 +54,11 @@ export default function Login({
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           {serverError && (
             <div className="login-global-error" role="alert">
-              <span className="login-global-error-icon">⚠️</span>
+              <img
+                src={warningIcon}
+                alt=""
+                className="login-global-error-icon"
+              />
               {serverError}
             </div>
           )}
@@ -75,7 +79,8 @@ export default function Login({
             />
             {errors.email && (
               <span id="email-error" className="field-error" role="alert">
-                ⚠ {errors.email}
+                <img src={warningIcon} alt="" />
+                {errors.email}
               </span>
             )}
           </div>
@@ -114,7 +119,8 @@ export default function Login({
             </div>
             {errors.password && (
               <span id="password-error" className="field-error" role="alert">
-                ⚠ {errors.password}
+                <img src={warningIcon} alt="" />
+                {errors.password}
               </span>
             )}
           </div>
