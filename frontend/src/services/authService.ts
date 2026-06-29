@@ -10,24 +10,34 @@
 
 import api from './api'
 import { AUTH_ENDPOINTS } from '../constants'
-import type { AuthUser } from '../types'
+import type { AuthUser, Account } from '../types'
 
 export const authService = {
+  // register a new application user.
+  async register(email: string, password: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.REGISTER, { email, password })
+  },
+
+  // Login to application with registred user only.
   async login(email: string, password: string): Promise<void> {
     // POST body carries credentials; on success the backend sets an httpOnly cookie.
     await api.post(AUTH_ENDPOINTS.LOGIN, { email, password })
   },
 
-  async register(email: string, password: string): Promise<void> {
-    await api.post(AUTH_ENDPOINTS.REGISTER, { email, password })
-  },
-
+  //logout cur application user.
   async logout(): Promise<void> {
     await api.post(AUTH_ENDPOINTS.LOGOUT)
   },
 
+  //cur login user info
   async curLoggedInUser(): Promise<AuthUser> {
     const res = await api.get<AuthUser>(AUTH_ENDPOINTS.ME)
+    return res.data
+  },
+
+  //all registred login users its needed in a dropdown list when we choose a team member.
+  async listAccounts(): Promise<Account[]> {
+    const res = await api.get<Account[]>(AUTH_ENDPOINTS.ACCOUNTS)
     return res.data
   },
 }

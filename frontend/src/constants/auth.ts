@@ -34,4 +34,5 @@ export const AUTH_ENDPOINTS = {
   REGISTER: '/register',
   LOGOUT: '/logout',
   ME: '/curLoggedInUser',
+  ACCOUNTS: '/accounts',
 } as const

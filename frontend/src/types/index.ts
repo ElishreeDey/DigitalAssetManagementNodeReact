@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : index
- * Description : Barrel — re-exports all frontend TypeScript types.
+ * Description : Barrel index file for all frontend TypeScript types.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-15
  ****************************************************************************************************************************

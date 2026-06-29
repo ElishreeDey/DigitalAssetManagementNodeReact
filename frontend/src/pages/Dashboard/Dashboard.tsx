@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Dashboard
- * Description : Main DAM dashboard containing asset management, upload, and user account views.
+ * Description : Main DAM dashboard containing asset management, upload, and user account views, team creation.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
@@ -15,6 +15,7 @@ import { useAssets } from '../../hooks'
 import UploadZone from './components/UploadZone/UploadZone'
 import AssetGallery from './components/AssetGallery/AssetGallery'
 import AssetPreview from './components/AssetPreview/AssetPreview'
+import Teams from './components/Teams/Teams'
 import './Dashboard.css'
 
 type DashboardProps = {
@@ -82,7 +83,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
   return (
     <div className="dashboard-layout">
-      {/* ── Sidebar ─────────────────────────────────────────────── */}
+      {/* Dashboard Sidebar */}
       <aside className="sidebar">
         {/* Logo */}
         <div className="sidebar-logo">
@@ -138,7 +139,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────────── */}
+      {/* Dashboard Main Content Area */}
       <div className="dashboard-main">
         {/* Top bar */}
         <header className="topbar">
@@ -170,11 +171,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             />
           )}
 
-          {activeNav === 'teams' && (
-            <div className="coming-soon">
-              <p>Teams coming soon.</p>
-            </div>
-          )}
+          {activeNav === 'teams' && <Teams currentUserId={user?.userId} />}
         </main>
       </div>
 

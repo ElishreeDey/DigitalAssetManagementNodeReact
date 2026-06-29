@@ -18,6 +18,12 @@ export type AuthUser = {
   role: UserRole
 }
 
+/* Bare id and email from the registered account (e.g. to pick "add team member" while adding a team member) */
+export type Account = {
+  id: string
+  email: string
+}
+
 /* Login */
 export type LoginFormFields = {
   email: string
