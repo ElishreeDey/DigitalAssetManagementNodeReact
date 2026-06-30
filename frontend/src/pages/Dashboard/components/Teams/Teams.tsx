@@ -12,6 +12,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useTeams } from '../../../../hooks'
 import { authService } from '../../../../services'
+import { ConfirmModal } from '../../../../components'
 import {
   trashIcon,
   editIcon,
@@ -54,6 +55,9 @@ export default function Teams({ currentUserId }: Props) {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
+  const [pendingDeleteTeamId, setPendingDeleteTeamId] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
     authService
@@ -238,7 +242,7 @@ export default function Teams({ currentUserId }: Props) {
                         data-tooltip="Delete team"
                         onClick={(e) => {
                           e.stopPropagation()
-                          void handleDeleteTeam(team.id)
+                          setPendingDeleteTeamId(team.id)
                         }}
                         aria-label="Delete team"
                       >
@@ -324,6 +328,17 @@ export default function Teams({ currentUserId }: Props) {
           )
         })}
       </div>
+
+      {pendingDeleteTeamId && (
+        <ConfirmModal
+          message="Are you sure you want to delete this team? All members and shared assets will be removed."
+          onConfirm={() => {
+            void handleDeleteTeam(pendingDeleteTeamId)
+            setPendingDeleteTeamId(null)
+          }}
+          onCancel={() => setPendingDeleteTeamId(null)}
+        />
+      )}
     </div>
   )
 }

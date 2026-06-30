@@ -199,3 +199,8 @@
   outline: none;
   border-color: var(--primary);
 }
+
+/* Save, Cancel, Add, Remove button size */
+.teams-page .btn-text {
+  font-size: 11px;
+}

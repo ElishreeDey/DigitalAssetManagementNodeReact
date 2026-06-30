@@ -7,8 +7,10 @@
  ****************************************************************************************************************************
  */
 
+import { useState } from 'react'
 import { assetUrl } from '../../../../constants'
 import { trashIcon, downloadIcon, pdfIcon, playIcon } from '../../../../assets'
+import { ConfirmModal } from '../../../../components'
 import type { AssetItem } from '../../../../types'
 import './AssetGallery.css'
 
@@ -54,6 +56,8 @@ export default function AssetGallery({
   onSourceChange,
   currentUserId,
 }: Props) {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+
   function formatBytes(b: number) {
     if (b < 1024) return `${b} B`
     if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`
@@ -177,7 +181,7 @@ export default function AssetGallery({
                     data-tooltip="Delete"
                     onClick={(e) => {
                       e.stopPropagation()
-                      onDelete(asset.id)
+                      setPendingDeleteId(asset.id)
                     }}
                     aria-label="Delete"
                   >
@@ -195,6 +199,17 @@ export default function AssetGallery({
           </div>
         ))}
       </div>
+
+      {pendingDeleteId && (
+        <ConfirmModal
+          message="Are you sure you want to delete this asset? This action cannot be undone."
+          onConfirm={() => {
+            onDelete(pendingDeleteId)
+            setPendingDeleteId(null)
+          }}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   )
 }
