@@ -76,6 +76,7 @@
   gap: 14px;
 }
 
+.team-card-edit,
 .team-card-delete {
   display: flex;
   align-items: center;
@@ -85,14 +86,48 @@
   opacity: 0.7;
 }
 
+.team-card-edit img,
 .team-card-delete img {
   width: 14px;
   height: 14px;
   display: block;
 }
 
+.team-card-edit:hover,
 .team-card-delete:hover {
   opacity: 1;
+}
+
+/* Inline team name edit */
+.team-name-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.team-name-edit-input {
+  flex: 1;
+  max-width: 260px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--white);
+  border: 1.5px solid var(--primary);
+  border-radius: 7px;
+  outline: none;
+}
+
+.team-name-edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.team-name-edit-cancel {
+  color: var(--text-muted);
 }
 
 .team-card-down-arr {

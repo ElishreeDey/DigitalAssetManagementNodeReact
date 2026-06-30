@@ -18,6 +18,12 @@ export const teamService = {
     return res.data
   },
 
+  //update team name
+  async update(teamId: string, name: string): Promise<Team> {
+    const res = await api.patch<Team>(TEAM_ENDPOINTS.byId(teamId), { name })
+    return res.data
+  },
+
   //remove existing team by teamId
   async remove(teamId: string): Promise<void> {
     await api.delete(TEAM_ENDPOINTS.byId(teamId))

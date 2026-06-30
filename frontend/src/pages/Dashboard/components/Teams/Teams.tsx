@@ -12,7 +12,12 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useTeams } from '../../../../hooks'
 import { authService } from '../../../../services'
-import { trashIcon, arrowUpIcon, arrowDownIcon } from '../../../../assets'
+import {
+  trashIcon,
+  editIcon,
+  arrowUpIcon,
+  arrowDownIcon,
+} from '../../../../assets'
 import { TEAM_TOAST } from '../../../../constants'
 import type { Account } from '../../../../types'
 import './Teams.css'
@@ -34,6 +39,7 @@ export default function Teams({ currentUserId }: Props) {
     error,
     members,
     createTeam,
+    updateTeam,
     removeTeam,
     fetchMembers,
     addMember,
@@ -46,6 +52,8 @@ export default function Teams({ currentUserId }: Props) {
   const [memberEmail, setMemberEmail] = useState('')
   const [isAddingMember, setIsAddingMember] = useState(false)
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
 
   useEffect(() => {
     authService
@@ -54,6 +62,7 @@ export default function Teams({ currentUserId }: Props) {
       .catch(() => toast.error(TEAM_TOAST.ACCOUNTS_LOAD_FAILED))
   }, [])
 
+  //Create Team
   async function handleCreateTeam(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!newTeamName.trim()) return
@@ -69,7 +78,19 @@ export default function Teams({ currentUserId }: Props) {
       setIsCreating(false)
     }
   }
+  //Update Team Name, only team owner can do this.
+  async function handleUpdateTeam(teamId: string) {
+    if (!editName.trim()) return
+    try {
+      await updateTeam(teamId, editName.trim())
+      setEditingTeamId(null)
+      toast.success(TEAM_TOAST.TEAM_UPDATED)
+    } catch (err) {
+      toast.error(getErrorMessage(err, TEAM_TOAST.TEAM_UPDATE_FAILED))
+    }
+  }
 
+  //Delete a Team
   async function handleDeleteTeam(teamId: string) {
     try {
       await removeTeam(teamId)
@@ -79,7 +100,7 @@ export default function Teams({ currentUserId }: Props) {
       toast.error(getErrorMessage(err, TEAM_TOAST.TEAM_DELETE_FAILED))
     }
   }
-
+  //Expand and Collapse to see Team members.
   function handleToggleExpand(teamId: string) {
     const next = expandedTeamId === teamId ? null : teamId
     setExpandedTeamId(next)
@@ -89,7 +110,7 @@ export default function Teams({ currentUserId }: Props) {
       )
     }
   }
-
+  //Add a member to Team
   async function handleAddMember(
     e: SyntheticEvent<HTMLFormElement>,
     teamId: string
@@ -109,6 +130,7 @@ export default function Teams({ currentUserId }: Props) {
     }
   }
 
+  //Remove a Team member
   async function handleRemoveMember(teamId: string, userId: string) {
     try {
       await removeMember(teamId, userId)
@@ -152,27 +174,77 @@ export default function Teams({ currentUserId }: Props) {
             <div key={team.id} className="team-card">
               <div
                 className="team-card-header"
-                onClick={() => handleToggleExpand(team.id)}
+                onClick={() => !editingTeamId && handleToggleExpand(team.id)}
               >
-                <div>
-                  <p className="team-card-name">{team.name}</p>
-                  <p className="team-card-date">
-                    Created {new Date(team.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="team-card-actions">
-                  {isExpanded && isOwner && (
-                    <button
-                      type="button"
-                      className="team-card-delete"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        void handleDeleteTeam(team.id)
+                {editingTeamId === team.id ? (
+                  <div
+                    className="team-name-edit"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      className="team-name-edit-input"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void handleUpdateTeam(team.id)
+                        if (e.key === 'Escape') setEditingTeamId(null)
                       }}
-                      aria-label="Delete team"
-                    >
-                      <img src={trashIcon} alt="" width={14} height={14} />
-                    </button>
+                      autoFocus
+                    />
+                    <div className="team-name-edit-actions">
+                      <button
+                        type="button"
+                        className="btn-text"
+                        onClick={() => void handleUpdateTeam(team.id)}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-text team-name-edit-cancel"
+                        onClick={() => setEditingTeamId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="team-card-name">{team.name}</p>
+                    <p className="team-card-date">
+                      Created {new Date(team.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+                <div className="team-card-actions">
+                  {isExpanded && isOwner && editingTeamId !== team.id && (
+                    <>
+                      <button
+                        type="button"
+                        className="team-card-edit"
+                        data-tooltip="Edit team name"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setEditName(team.name)
+                          setEditingTeamId(team.id)
+                        }}
+                        aria-label="Edit team name"
+                      >
+                        <img src={editIcon} alt="" width={14} height={14} />
+                      </button>
+                      <button
+                        type="button"
+                        className="team-card-delete"
+                        data-tooltip="Delete team"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          void handleDeleteTeam(team.id)
+                        }}
+                        aria-label="Delete team"
+                      >
+                        <img src={trashIcon} alt="" width={14} height={14} />
+                      </button>
+                    </>
                   )}
                   <span className="team-card-down-arr">
                     <img
@@ -198,6 +270,7 @@ export default function Teams({ currentUserId }: Props) {
                           <button
                             type="button"
                             className="btn-text"
+                            data-tooltip="Remove member"
                             onClick={() =>
                               void handleRemoveMember(team.id, m.userId)
                             }

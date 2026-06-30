@@ -163,6 +163,7 @@ export default function AssetGallery({
                 <a
                   href={assetUrl.download(asset.id)}
                   className="asset-card-action"
+                  data-tooltip="Download"
                   download
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Download"
@@ -173,6 +174,7 @@ export default function AssetGallery({
                   <button
                     type="button"
                     className="asset-card-action"
+                    data-tooltip="Delete"
                     onClick={(e) => {
                       e.stopPropagation()
                       onDelete(asset.id)

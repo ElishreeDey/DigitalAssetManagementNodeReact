@@ -98,6 +98,7 @@ export const MESSAGES = {
   TEAM_FETCH_FAILED_MSG: 'Failed to fetch teams',
   TEAM_NOT_A_MEMBER_MSG: 'You are not a member of this team',
   TEAM_OWNER_ONLY_MSG: 'Only a team owner can perform this action',
+  TEAM_UPDATE_FAILED_MSG: 'Failed to update team',
   TEAM_DELETE_FAILED_MSG: 'Failed to delete team',
   TEAM_DELETE_SUCCESS_MSG: 'Team deleted successfully',
 

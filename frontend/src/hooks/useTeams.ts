@@ -44,6 +44,12 @@ export function useTeams() {
     setTeams((prev) => [team, ...prev])
   }
 
+  //update Team Name
+  async function updateTeam(teamId: string, name: string): Promise<void> {
+    const updated = await teamService.update(teamId, name)
+    setTeams((prev) => prev.map((t) => (t.id === teamId ? updated : t)))
+  }
+
   //remove team
   async function removeTeam(teamId: string): Promise<void> {
     await teamService.remove(teamId)
@@ -78,6 +84,7 @@ export function useTeams() {
     error,
     members,
     createTeam,
+    updateTeam,
     removeTeam,
     fetchMembers,
     addMember,

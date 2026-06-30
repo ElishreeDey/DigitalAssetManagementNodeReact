@@ -22,6 +22,8 @@ export const TEAM_TOAST = {
   ACCOUNTS_LOAD_FAILED: 'Failed to load accounts',
   TEAM_CREATED: 'Team created',
   TEAM_CREATE_FAILED: 'Failed to create team',
+  TEAM_UPDATED: 'Team name updated',
+  TEAM_UPDATE_FAILED: 'Failed to update team name',
   TEAM_DELETED: 'Team deleted',
   TEAM_DELETE_FAILED: 'Failed to delete team',
   MEMBERS_LOAD_FAILED: 'Failed to load members',
