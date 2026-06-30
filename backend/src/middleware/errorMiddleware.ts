@@ -20,5 +20,5 @@ export const errorMiddleware = (
 
   res
     .status(error.status ?? 500)
-    .json({ message: MESSAGES.SOMETHING_WENT_WRONG_MSG })
+    .json({ message: error.message || MESSAGES.SOMETHING_WENT_WRONG_MSG })
 }

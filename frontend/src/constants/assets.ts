@@ -10,6 +10,8 @@
 export const ASSET_ENDPOINTS = {
   UPLOAD: '/assets/upload',
   LIST: '/assets',
+  LIST_SHARED: '/assets/shared-with-curloginuser',
+  SHARE: (id: string) => `/assets/${id}/share`,
 } as const
 
 export const ASSET_ERRORS = {
@@ -17,6 +19,8 @@ export const ASSET_ERRORS = {
   INVALID_TYPE: 'Only images, videos, and PDFs are accepted',
   FILE_TOO_LARGE: 'File exceeds the 50 MB limit',
   UPLOAD_FAILED: 'Upload failed. Please try again.',
+  SHARE_FAILED:
+    'Files uploaded but could not be shared with the team. Find them in My Assets.',
 } as const
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? ''

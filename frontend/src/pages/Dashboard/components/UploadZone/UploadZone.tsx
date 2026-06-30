@@ -11,15 +11,17 @@
 import { useRef, useState } from 'react'
 import { useUpload } from '../../../../hooks'
 import { uploadIcon, pdfIcon, playIcon, removeIcon } from '../../../../assets'
-import type { AssetItem } from '../../../../types'
+import type { AssetItem, Team } from '../../../../types'
 import './UploadZone.css'
 
 type Props = {
   onUploaded: (assets: AssetItem[]) => void
+  teams: Team[]
 }
 
-export default function UploadZone({ onUploaded }: Props) {
+export default function UploadZone({ onUploaded, teams }: Props) {
   const [isDragging, setIsDragging] = useState(false)
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
   const {
     files,
@@ -30,7 +32,7 @@ export default function UploadZone({ onUploaded }: Props) {
     removeFile,
     upload,
     clear,
-  } = useUpload(onUploaded)
+  } = useUpload(onUploaded, selectedTeamId || undefined)
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -49,8 +51,39 @@ export default function UploadZone({ onUploaded }: Props) {
     return `${(b / (1024 * 1024)).toFixed(1)} MB`
   }
 
+  const selectedTeam = teams.find((t) => t.id === selectedTeamId)
+
+  const uploadLabel = isUploading
+    ? 'Uploading…'
+    : selectedTeam
+      ? `Upload ${validCount} file${validCount !== 1 ? 's' : ''} to ${selectedTeam.name}`
+      : `Upload ${validCount} file${validCount !== 1 ? 's' : ''}`
+
   return (
     <div className="upload-page">
+      {teams.length > 0 && (
+        <div className="upload-team-selector">
+          <label htmlFor="upload-team" className="upload-team-label">
+            Upload to
+          </label>
+
+          {/* Dropdown to choose upload assets specific to any related team only or personal only */}
+          <select
+            id="upload-team"
+            className="upload-team-select"
+            value={selectedTeamId}
+            onChange={(e) => setSelectedTeamId(e.target.value)}
+          >
+            <option value="">My Personal Assets</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div
         className={`drop-zone${isDragging ? ' drop-zone--active' : ''}`}
         onDrop={handleDrop}
@@ -152,15 +185,16 @@ export default function UploadZone({ onUploaded }: Props) {
 
           <div className="queue-actions">
             {uploadError && <p className="queue-upload-error">{uploadError}</p>}
+
+            {/* upload button name will be "Uploading" when personal upload */}
+            {/* upload button name will be "Upload"+Team name when specific to team */}
             <button
               type="button"
               className="btn-upload"
               onClick={upload}
               disabled={isUploading || validCount === 0}
             >
-              {isUploading
-                ? 'Uploading…'
-                : `Upload ${validCount} file${validCount !== 1 ? 's' : ''}`}
+              {uploadLabel}
             </button>
           </div>
         </div>

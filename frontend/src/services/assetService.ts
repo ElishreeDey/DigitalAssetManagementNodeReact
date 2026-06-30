@@ -19,8 +19,6 @@ export const assetService = {
     const formData = new FormData()
     files.forEach((f) => formData.append('files', f))
 
-    // No explicit Content-Type header — axios sets multipart/form-data with the
-    // correct boundary automatically. Setting it manually breaks multer's parsing.
     const res = await api.post<{ assets: AssetItem[] }>(
       ASSET_ENDPOINTS.UPLOAD,
       formData,
@@ -46,5 +44,25 @@ export const assetService = {
 
   async remove(id: string): Promise<void> {
     await api.delete(`${ASSET_ENDPOINTS.LIST}/${id}`)
+  },
+
+  async shareWithTeam(
+    assetId: string,
+    teamId: string,
+    permission: 'view' | 'download' = 'download'
+  ): Promise<void> {
+    await api.post(ASSET_ENDPOINTS.SHARE(assetId), { teamId, permission })
+  },
+
+  async listShared(params?: {
+    search?: string
+    type?: string
+    sort?: 'asc' | 'desc'
+  }): Promise<AssetItem[]> {
+    const res = await api.get<{ assets: AssetItem[] }>(
+      ASSET_ENDPOINTS.LIST_SHARED,
+      { params }
+    )
+    return res.data.assets
   },
 }

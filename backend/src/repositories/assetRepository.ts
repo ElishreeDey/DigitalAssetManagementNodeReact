@@ -7,7 +7,7 @@
  ****************************************************************************************************************************
  */
 
-import { Op } from 'sequelize'
+import { Op } from 'sequelize' //Op means Operators used for where op.like conditions in SQL
 import { Asset, AssetShare, TeamMember, Team } from '../models'
 import type {
   AssetCreateData,
@@ -18,36 +18,61 @@ import type {
 } from '../types'
 
 export class AssetRepository {
+  //Insert a new asset into the database.
   async create(data: AssetCreateData): Promise<Asset> {
     return Asset.create(data as unknown as Asset)
   }
 
+  //Find an asset by its primary key
   async findById(id: string): Promise<Asset | null> {
     return Asset.findByPk(id)
   }
 
+  // User only ever see assets they uploaded for themselves.
   async list(query: AssetListQuery, userId: string): Promise<Asset[]> {
-    // User only ever see assets they uploaded for themselves.
     return this.findFiltered(query, { uploadedBy: userId })
   }
 
   // Assets shared with any team this user belongs to.
+  // For Team assets display team name so the UI can display which team the asset belong to.
   async listSharedWithUser(
     query: AssetListQuery,
     userId: string
-  ): Promise<Asset[]> {
+  ): Promise<Record<string, unknown>[]> {
     const memberships = await TeamMember.findAll({ where: { userId } })
     const teamIds = memberships.map((m) => m.teamId)
     if (!teamIds.length) return []
 
-    const shares = await AssetShare.findAll({ where: { teamId: teamIds } })
+    const shares = await AssetShare.findAll({
+      where: { teamId: teamIds },
+      include: [{ model: Team, as: 'team', attributes: ['id', 'name'] }],
+    })
+    if (!shares.length) return []
 
-    const assetIds = [...new Set(shares.map((s) => s.assetId))]
-    if (!assetIds.length) return []
+    const assetTeamMap = new Map<string, { teamId: string; teamName: string }>()
+    for (const share of shares) {
+      if (!assetTeamMap.has(share.assetId)) {
+        const team = (
+          share as unknown as { team?: { id: string; name: string } }
+        ).team
+        assetTeamMap.set(share.assetId, {
+          teamId: share.teamId,
+          teamName: team?.name ?? '',
+        })
+      }
+    }
 
-    return this.findFiltered(query, { id: assetIds })
+    const assetIds = [...assetTeamMap.keys()]
+    const assets = await this.findFiltered(query, { id: assetIds })
+
+    return assets.map((a) => ({
+      ...(a.toJSON() as Record<string, unknown>),
+      teamId: assetTeamMap.get(a.id)!.teamId,
+      teamName: assetTeamMap.get(a.id)!.teamName,
+    }))
   }
 
+  //Apply search, filtering, sorting
   private async findFiltered(
     query: AssetListQuery,
     baseWhere: Record<string, unknown>
@@ -78,10 +103,12 @@ export class AssetRepository {
     })
   }
 
+  // Update the asset's processing status.
   async updateStatus(id: string, status: AssetStatus): Promise<void> {
     await Asset.update({ status }, { where: { id } })
   }
 
+  //Save thumbnail, metadata after background processing
   async updateAfterProcessing(
     id: string,
     result: AssetProcessingResult
@@ -145,7 +172,7 @@ export class AssetRepository {
     permission: SharePermission
     createdBy: string
   }): Promise<AssetShare> {
-    return AssetShare.create(data)
+    return AssetShare.create(data as unknown as AssetShare)
   }
 
   // Shares for an asset, with the team name for display in the UI.

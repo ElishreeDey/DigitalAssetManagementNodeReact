@@ -12,6 +12,8 @@ import { trashIcon, downloadIcon, pdfIcon, playIcon } from '../../../../assets'
 import type { AssetItem } from '../../../../types'
 import './AssetGallery.css'
 
+type AssetSource = 'mine' | 'shared'
+
 type Props = {
   assets: AssetItem[]
   isLoading: boolean
@@ -24,6 +26,9 @@ type Props = {
   onTypeChange: (value: string) => void
   sortOrder: 'asc' | 'desc'
   onSortChange: (value: 'asc' | 'desc') => void
+  source: AssetSource
+  onSourceChange: (source: AssetSource) => void
+  currentUserId?: string
 }
 
 const TYPE_TABS = [
@@ -45,6 +50,9 @@ export default function AssetGallery({
   onTypeChange,
   sortOrder,
   onSortChange,
+  source,
+  onSourceChange,
+  currentUserId,
 }: Props) {
   function formatBytes(b: number) {
     if (b < 1024) return `${b} B`
@@ -54,6 +62,24 @@ export default function AssetGallery({
 
   return (
     <div className="gallery-page">
+      {/* Assest gallery toggle based on all personal assets or team assets */}
+      <div className="gallery-source-toggle">
+        <button
+          type="button"
+          className={`source-tab${source === 'mine' ? ' source-tab--active' : ''}`}
+          onClick={() => onSourceChange('mine')}
+        >
+          My Assets
+        </button>
+        <button
+          type="button"
+          className={`source-tab${source === 'shared' ? ' source-tab--active' : ''}`}
+          onClick={() => onSourceChange('shared')}
+        >
+          Team Assets
+        </button>
+      </div>
+
       <div className="gallery-toolbar">
         {/* search by tags or filename */}
         <input
@@ -97,7 +123,9 @@ export default function AssetGallery({
       {error && <p className="gallery-status gallery-status--error">{error}</p>}
       {!isLoading && !error && assets.length === 0 && (
         <p className="gallery-status">
-          No assets yet — upload your first file.
+          {source === 'shared'
+            ? 'No team assets yet — ask a team member to upload files to your team.'
+            : 'No assets yet — upload your first file.'}
         </p>
       )}
 
@@ -128,6 +156,9 @@ export default function AssetGallery({
                   {asset.status}
                 </span>
               )}
+              {source === 'shared' && asset.teamName && (
+                <span className="show-asset-team-name">{asset.teamName}</span>
+              )}
               <div className="asset-card-overlay">
                 <a
                   href={assetUrl.download(asset.id)}
@@ -138,17 +169,19 @@ export default function AssetGallery({
                 >
                   <img src={downloadIcon} alt="" width={16} height={16} />
                 </a>
-                <button
-                  type="button"
-                  className="asset-card-action"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(asset.id)
-                  }}
-                  aria-label="Delete"
-                >
-                  <img src={trashIcon} alt="" width={16} height={16} />
-                </button>
+                {asset.uploadedBy === currentUserId && (
+                  <button
+                    type="button"
+                    className="asset-card-action"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(asset.id)
+                    }}
+                    aria-label="Delete"
+                  >
+                    <img src={trashIcon} alt="" width={16} height={16} />
+                  </button>
+                )}
               </div>
             </div>
             <div className="asset-card-meta">

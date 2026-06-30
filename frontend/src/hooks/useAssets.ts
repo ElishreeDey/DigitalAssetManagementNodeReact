@@ -17,7 +17,8 @@ const POLL_INTERVAL_MS = 5000 // In every 5 seconds React checks if need to relo
 export function useAssets(
   search: string,
   typeFilter: string,
-  sortOrder: 'asc' | 'desc' = 'desc'
+  sortOrder: 'asc' | 'desc' = 'desc',
+  source: 'mine' | 'shared' = 'mine'
 ) {
   const [assets, setAssets] = useState<AssetItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -27,11 +28,15 @@ export function useAssets(
   //useCallback React hook - React remembers the same function(fetchAssets) until one of its dependencies(searchTxt, typeFilter, sortOrder)changes.
   const fetchAssets = useCallback(async () => {
     try {
-      const data = await assetService.list({
+      const params = {
         search: search || undefined,
         type: typeFilter !== 'all' ? typeFilter : undefined,
         sort: sortOrder,
-      })
+      }
+      const data =
+        source === 'shared'
+          ? await assetService.listShared(params)
+          : await assetService.list(params)
 
       setAssets(data)
 
@@ -45,7 +50,7 @@ export function useAssets(
     } finally {
       setIsLoading(false)
     }
-  }, [search, typeFilter, sortOrder])
+  }, [search, typeFilter, sortOrder, source])
 
   // useEffect React hook - runs when page opens Or when fetchAssets(search specific condition given)
   useEffect(() => {

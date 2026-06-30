@@ -8,6 +8,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import axios from 'axios'
 import { assetService } from '../services'
 import { ASSET_ERRORS } from '../constants'
 import type { AssetItem, UploadFileState } from '../types'
@@ -25,7 +26,10 @@ function validateFile(file: File): string | null {
 }
 
 // useUpload is custom hook defined here it owns the complete upload lifecycle.
-export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
+export function useUpload(
+  onSuccess: (assets: AssetItem[]) => void,
+  teamId?: string
+) {
   const [files, setFiles] = useState<UploadFileState[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
@@ -65,7 +69,6 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
     setUploadError(null)
 
     try {
-      //assetService.upload() this is where Backend is called.
       const uploaded = await assetService.upload(
         valid.map((f) => f.file),
         (percent) =>
@@ -73,6 +76,23 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
             prev.map((f) => (f.error ? f : { ...f, progress: percent }))
           )
       )
+
+      // Auto-share every uploaded asset with the selected team
+      if (teamId) {
+        try {
+          await Promise.all(
+            uploaded.map((asset) =>
+              assetService.shareWithTeam(asset.id, teamId)
+            )
+          )
+        } catch {
+          setUploadError(ASSET_ERRORS.SHARE_FAILED)
+          setFiles((prev) =>
+            prev.map((f) => (f.error ? f : { ...f, progress: 0 }))
+          )
+          return
+        }
+      }
 
       // Release preview URLs after successful upload
       files.forEach((f) => {
@@ -83,7 +103,12 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
       onSuccess(uploaded)
     } catch (err) {
       const msg =
-        err instanceof Error ? err.message : ASSET_ERRORS.UPLOAD_FAILED
+        axios.isAxiosError(err) &&
+        typeof err.response?.data?.message === 'string'
+          ? (err.response.data.message as string)
+          : err instanceof Error
+            ? err.message
+            : ASSET_ERRORS.UPLOAD_FAILED
 
       setUploadError(msg)
 
@@ -92,7 +117,7 @@ export function useUpload(onSuccess: (assets: AssetItem[]) => void) {
     } finally {
       setIsUploading(false)
     }
-  }, [files, onSuccess])
+  }, [files, onSuccess, teamId])
 
   const clear = useCallback(() => {
     // Clean up generated preview URLs

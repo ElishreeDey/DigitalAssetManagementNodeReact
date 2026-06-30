@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import { authService } from '../../services'
 import { damLogo, assetsIcon, uploadIcon, collectionsIcon } from '../../assets'
 import type { AuthUser, AssetItem } from '../../types'
-import { useAssets } from '../../hooks'
+import { useAssets, useTeams } from '../../hooks'
 import UploadZone from './components/UploadZone/UploadZone'
 import AssetGallery from './components/AssetGallery/AssetGallery'
 import AssetPreview from './components/AssetPreview/AssetPreview'
@@ -44,11 +44,14 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [assetSource, setAssetSource] = useState<'mine' | 'shared'>('mine')
 
+  const { teams } = useTeams()
   const { assets, isLoading, error, addAssets, removeAsset } = useAssets(
     search,
     typeFilter,
-    sortOrder
+    sortOrder,
+    assetSource
   )
 
   useEffect(() => {
@@ -153,7 +156,9 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
         {/* Scrollable content area */}
         <main className="content-area">
-          {activeNav === 'upload' && <UploadZone onUploaded={handleUploaded} />}
+          {activeNav === 'upload' && (
+            <UploadZone onUploaded={handleUploaded} teams={teams} />
+          )}
 
           {activeNav === 'assets' && (
             <AssetGallery
@@ -168,6 +173,9 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               onTypeChange={setTypeFilter}
               sortOrder={sortOrder}
               onSortChange={setSortOrder}
+              source={assetSource}
+              onSourceChange={setAssetSource}
+              currentUserId={user?.userId}
             />
           )}
 
