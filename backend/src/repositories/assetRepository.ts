@@ -28,9 +28,19 @@ export class AssetRepository {
     return Asset.findByPk(id)
   }
 
-  // User only ever see assets they uploaded for themselves.
+  // Personal assets only — excludes anything the user has shared with a team.
   async list(query: AssetListQuery, userId: string): Promise<Asset[]> {
-    return this.findFiltered(query, { uploadedBy: userId })
+    const teamSharedIds = await AssetShare.findAll({
+      where: { createdBy: userId },
+      attributes: ['assetId'],
+    }).then((rows) => rows.map((r) => r.assetId))
+
+    const baseWhere: Record<string, unknown> = { uploadedBy: userId }
+    if (teamSharedIds.length) {
+      baseWhere['id'] = { [Op.notIn]: teamSharedIds }
+    }
+
+    return this.findFiltered(query, baseWhere)
   }
 
   // Assets shared with any team this user belongs to.

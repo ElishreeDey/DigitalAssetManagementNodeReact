@@ -7,21 +7,25 @@
 /* Toggle between (My Assets / Team Assets) */
 .gallery-source-toggle {
   display: flex;
-  gap: 4px;
-  background: var(--bg);
+  align-items: center;
+  height: 38px;
+  gap: 6px;
+  background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 3px;
+  border-radius: 8px;
+  padding: 0 3px;
+  box-sizing: border-box;
   width: fit-content;
 }
 
 .source-tab {
-  padding: 6px 18px;
   border: none;
-  border-radius: 7px;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 500;
+  height: 30px;
+  padding: 0 16px;
+  border-radius: 6px;
+  background: none;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
   transition:
@@ -34,10 +38,8 @@
 }
 
 .source-tab--active {
-  background: var(--white);
-  color: var(--primary-dark);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--primary-dark);
+  color: #fff;
 }
 
 /* Toolbar */
