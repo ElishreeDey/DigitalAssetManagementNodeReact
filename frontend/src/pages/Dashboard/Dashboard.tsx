@@ -7,19 +7,23 @@
  ****************************************************************************************************************************
  */
 
-import { useState, useEffect } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { authService } from '../../services'
 import { damLogo, assetsIcon, uploadIcon, collectionsIcon } from '../../assets'
 import type { AuthUser, AssetItem } from '../../types'
-import { useAssets, useTeams } from '../../hooks'
-import UploadZone from './components/UploadZone/UploadZone'
+import { useAssets } from '../../hooks/useAssets'
 import AssetGallery from './components/AssetGallery/AssetGallery'
-import AssetPreview from './components/AssetPreview/AssetPreview'
-import Teams from './components/Teams/Teams'
 import './Dashboard.css'
+
+const Teams = lazy(() => import('./components/Teams/Teams'))
+const UploadZone = lazy(() => import('./components/UploadZone/UploadZone'))
+const AssetPreview = lazy(
+  () => import('./components/AssetPreview/AssetPreview')
+)
 
 type DashboardProps = {
   onLogout: () => void
+  initialUser: AuthUser | null
 }
 
 type NavKey = 'assets' | 'upload' | 'teams'
@@ -36,8 +40,8 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'teams', label: 'Teams', iconSrc: collectionsIcon },
 ]
 
-export default function Dashboard({ onLogout }: DashboardProps) {
-  const [user, setUser] = useState<AuthUser | null>(null)
+export default function Dashboard({ onLogout, initialUser }: DashboardProps) {
+  const [user] = useState<AuthUser | null>(initialUser)
   const [activeNav, setActiveNav] = useState<NavKey>('assets')
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [previewAsset, setPreviewAsset] = useState<AssetItem | null>(null)
@@ -46,20 +50,12 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [assetSource, setAssetSource] = useState<'mine' | 'shared'>('mine')
 
-  const { teams } = useTeams()
   const { assets, isLoading, error, addAssets, removeAsset } = useAssets(
     search,
     typeFilter,
     sortOrder,
     assetSource
   )
-
-  useEffect(() => {
-    authService
-      .curLoggedInUser()
-      .then(setUser)
-      .catch(() => onLogout()) // redirect to login if the cookie has expired
-  }, [onLogout])
 
   async function handleLogout() {
     setIsLoggingOut(true)
@@ -157,7 +153,9 @@ export default function Dashboard({ onLogout }: DashboardProps) {
         {/* Scrollable content area */}
         <main className="content-area">
           {activeNav === 'upload' && (
-            <UploadZone onUploaded={handleUploaded} teams={teams} />
+            <Suspense fallback={null}>
+              <UploadZone onUploaded={handleUploaded} />
+            </Suspense>
           )}
 
           {activeNav === 'assets' && (
@@ -179,14 +177,22 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             />
           )}
 
-          {activeNav === 'teams' && <Teams currentUserId={user?.userId} />}
+          {activeNav === 'teams' && (
+            <Suspense fallback={null}>
+              <Teams currentUserId={user?.userId} />
+            </Suspense>
+          )}
         </main>
       </div>
 
-      <AssetPreview
-        asset={previewAsset}
-        onClose={() => setPreviewAsset(null)}
-      />
+      {previewAsset && (
+        <Suspense fallback={null}>
+          <AssetPreview
+            asset={previewAsset}
+            onClose={() => setPreviewAsset(null)}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }

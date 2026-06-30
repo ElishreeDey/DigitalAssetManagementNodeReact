@@ -7,7 +7,7 @@
  ****************************************************************************************************************************
  */
 
-import { useLoginForm } from '../../hooks'
+import { useLoginForm } from '../../hooks/useLoginForm'
 import { eyeIcon, eyeOffIcon, warningIcon } from '../../assets'
 import './Login.css'
 

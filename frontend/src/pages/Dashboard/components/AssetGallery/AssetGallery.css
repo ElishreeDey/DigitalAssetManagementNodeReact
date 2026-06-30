@@ -35,7 +35,8 @@
 
 .source-tab--active {
   background: var(--white);
-  color: var(--primary);
+  color: var(--primary-dark);
+  font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -86,7 +87,7 @@
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -94,7 +95,7 @@
 }
 
 .gallery-tab--active {
-  background: var(--primary);
+  background: var(--primary-dark);
   color: #fff;
 }
 
@@ -114,8 +115,7 @@
   border: 1.5px solid var(--border);
   border-radius: 8px;
   font-size: 13px;
-
-  color: var(--text-muted);
+  color: var(--text-secondary);
   background: var(--white);
   outline: none;
   cursor: pointer;

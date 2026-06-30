@@ -152,7 +152,6 @@ export default function AssetGallery({
                 <img
                   src={assetUrl.thumbnail(asset.id)}
                   alt={asset.originalName}
-                  loading="lazy"
                 />
               )}
               {asset.status !== 'ready' && (

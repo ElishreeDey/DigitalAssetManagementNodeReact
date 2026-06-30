@@ -145,7 +145,7 @@
 
 .user-role {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   text-transform: capitalize;
   margin-top: 1px;
 }
@@ -212,7 +212,7 @@
 
 .page-date {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* Scrollable content */

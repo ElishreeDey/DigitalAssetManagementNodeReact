@@ -8,7 +8,6 @@
  */
 
 import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
-import axios from 'axios'
 import { toast } from 'react-toastify'
 import { authService } from '../services'
 import { validateLoginForm } from '../utils'
@@ -63,13 +62,11 @@ export function useLoginForm(onSuccess?: () => void): UseLoginFormReturn {
       toast.success(AUTH_TOAST.LOGIN_SUCCESS)
       onSuccess?.()
     } catch (err) {
-      // Prefer API error messages when available.
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? (err.response.data.message as string)
-          : AUTH_ERRORS.LOGIN_FAILED
-
-      setServerError(message)
+      const apiMsg = (err as { response?: { data?: { message?: unknown } } })
+        .response?.data?.message
+      setServerError(
+        typeof apiMsg === 'string' ? apiMsg : AUTH_ERRORS.LOGIN_FAILED
+      )
     } finally {
       setIsLoading(false)
     }

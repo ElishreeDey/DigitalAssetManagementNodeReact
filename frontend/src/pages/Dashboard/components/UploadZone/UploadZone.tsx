@@ -9,17 +9,17 @@
  */
 
 import { useRef, useState } from 'react'
-import { useUpload } from '../../../../hooks'
+import { useUpload, useTeams } from '../../../../hooks'
 import { uploadIcon, pdfIcon, playIcon, removeIcon } from '../../../../assets'
-import type { AssetItem, Team } from '../../../../types'
+import type { AssetItem } from '../../../../types'
 import './UploadZone.css'
 
 type Props = {
   onUploaded: (assets: AssetItem[]) => void
-  teams: Team[]
 }
 
-export default function UploadZone({ onUploaded, teams }: Props) {
+export default function UploadZone({ onUploaded }: Props) {
+  const { teams } = useTeams()
   const [isDragging, setIsDragging] = useState(false)
   const [selectedTeamId, setSelectedTeamId] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
