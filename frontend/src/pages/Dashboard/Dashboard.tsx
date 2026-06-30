@@ -47,7 +47,9 @@ export default function Dashboard({ onLogout, initialUser }: DashboardProps) {
   const [previewAsset, setPreviewAsset] = useState<AssetItem | null>(null)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [sortOrder, setSortOrder] = useState<
+    'asc' | 'desc' | 'size-asc' | 'size-desc'
+  >('desc')
   const [assetSource, setAssetSource] = useState<'mine' | 'shared'>('mine')
 
   const { assets, isLoading, error, addAssets, removeAsset } = useAssets(

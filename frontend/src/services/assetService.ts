@@ -34,7 +34,7 @@ export const assetService = {
   async list(params?: {
     search?: string
     type?: string
-    sort?: 'asc' | 'desc'
+    sort?: 'asc' | 'desc' | 'size-asc' | 'size-desc'
   }): Promise<AssetItem[]> {
     const res = await api.get<{ assets: AssetItem[] }>(ASSET_ENDPOINTS.LIST, {
       params,
@@ -57,7 +57,7 @@ export const assetService = {
   async listShared(params?: {
     search?: string
     type?: string
-    sort?: 'asc' | 'desc'
+    sort?: 'asc' | 'desc' | 'size-asc' | 'size-desc'
   }): Promise<AssetItem[]> {
     const res = await api.get<{ assets: AssetItem[] }>(
       ASSET_ENDPOINTS.LIST_SHARED,

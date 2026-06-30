@@ -26,8 +26,8 @@ type Props = {
   onSearchChange: (value: string) => void
   typeFilter: string
   onTypeChange: (value: string) => void
-  sortOrder: 'asc' | 'desc'
-  onSortChange: (value: 'asc' | 'desc') => void
+  sortOrder: 'asc' | 'desc' | 'size-asc' | 'size-desc'
+  onSortChange: (value: 'asc' | 'desc' | 'size-asc' | 'size-desc') => void
   source: AssetSource
   onSourceChange: (source: AssetSource) => void
   currentUserId?: string
@@ -114,11 +114,17 @@ export default function AssetGallery({
           <select
             className="gallery-sort"
             value={sortOrder}
-            onChange={(e) => onSortChange(e.target.value as 'asc' | 'desc')}
-            aria-label="Sort by upload date"
+            onChange={(e) =>
+              onSortChange(
+                e.target.value as 'asc' | 'desc' | 'size-asc' | 'size-desc'
+              )
+            }
+            aria-label="Sort assets"
           >
             <option value="desc">Newest first</option>
             <option value="asc">Oldest first</option>
+            <option value="size-desc">Size- big to small</option>
+            <option value="size-asc">Size- small to big</option>
           </select>
         </label>
       </div>

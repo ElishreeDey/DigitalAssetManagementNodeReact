@@ -17,7 +17,7 @@ const POLL_INTERVAL_MS = 5000 // In every 5 seconds React checks if need to relo
 export function useAssets(
   search: string,
   typeFilter: string,
-  sortOrder: 'asc' | 'desc' = 'desc',
+  sortOrder: 'asc' | 'desc' | 'size-asc' | 'size-desc' = 'desc',
   source: 'mine' | 'shared' = 'mine'
 ) {
   const [assets, setAssets] = useState<AssetItem[]>([])

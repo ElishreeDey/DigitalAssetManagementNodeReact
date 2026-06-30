@@ -45,5 +45,5 @@ export type AssetListQuery = {
   type?: string
   page?: string
   limit?: string
-  sort?: 'asc' | 'desc' // Sort by creation date
+  sort?: 'asc' | 'desc' | 'size-asc' | 'size-desc' //Sort by creation dt asc or desc or sort by size asc or desc
 }
