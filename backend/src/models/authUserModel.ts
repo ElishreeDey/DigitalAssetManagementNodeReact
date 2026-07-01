@@ -9,13 +9,11 @@
 
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config'
-import type { UserRole } from '../types'
 
 export class AuthUser extends Model {
   declare id: string
   declare email: string
   declare passwordHash: string
-  declare role: UserRole
 }
 
 AuthUser.init(
@@ -34,11 +32,6 @@ AuthUser.init(
     passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM('admin', 'editor', 'viewer'),
-      allowNull: false,
-      defaultValue: 'viewer',
     },
   },
   {

@@ -125,7 +125,6 @@ export default function Dashboard({ onLogout, initialUser }: DashboardProps) {
               <p className="user-email" title={user?.email ?? ''}>
                 {user?.email ?? '…'}
               </p>
-              <p className="user-role">{user?.role ?? ''}</p>
             </div>
           </div>
 

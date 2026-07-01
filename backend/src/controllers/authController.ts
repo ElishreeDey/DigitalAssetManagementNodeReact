@@ -70,7 +70,6 @@ export const register = async (
     const token = generateToken({
       userId: authUser.id,
       email: authUser.email,
-      role: authUser.role,
     })
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS)
 
@@ -117,7 +116,6 @@ export const login = async (
     const token = generateToken({
       userId: authUser.id,
       email: authUser.email,
-      role: authUser.role,
     })
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS)
 

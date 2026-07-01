@@ -7,7 +7,7 @@
  ****************************************************************************************************************************
  */
 
-export type { UserRole, JwtPayload, RegisterBody, LoginBody } from './authTypes'
+export type { JwtPayload, RegisterBody, LoginBody } from './authTypes'
 
 export type {
   AssetStatus,

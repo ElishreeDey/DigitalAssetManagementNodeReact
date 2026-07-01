@@ -8,23 +8,15 @@
  */
 
 import { AuthUser } from '../models'
-import type { UserRole } from '../types'
 
 export class AuthUserRepository {
   async findByEmail(email: string) {
     return AuthUser.findOne({ where: { email } })
   }
 
-  async createAuthUser(
-    email: string,
-    passwordHash: string,
-    role: UserRole = 'viewer'
-  ) {
+  async createAuthUser(email: string, passwordHash: string) {
     // Type assertion required for Sequelize create() typing.
-    return AuthUser.create({ email, passwordHash, role } as Record<
-      string,
-      unknown
-    >)
+    return AuthUser.create({ email, passwordHash } as Record<string, unknown>)
   }
 
   async listDirectory(): Promise<{ id: string; email: string }[]> {
