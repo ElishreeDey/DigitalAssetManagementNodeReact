@@ -68,7 +68,12 @@ export default function App() {
       {view === 'login' && (
         <Login
           onNavigateToRegister={() => setView('register')}
-          onLoginSuccess={() => setView('dashboard')}
+          onLoginSuccess={() => {
+            authService.curLoggedInUser().then((user) => {
+              setCurrentUser(user)
+              setView('dashboard')
+            })
+          }}
         />
       )}
     </>
