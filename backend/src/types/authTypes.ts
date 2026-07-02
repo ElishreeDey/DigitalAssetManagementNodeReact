@@ -1,18 +1,15 @@
 /*
  ****************************************************************************************************************************
  * Filename    : authTypes
- * Description : TypeScript types for authentication — JWT payload, request bodies, and user role enum.
+ * Description : TypeScript types for authentication — JWT payload and request bodies.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-12
  ****************************************************************************************************************************
  */
 
-export type UserRole = 'admin' | 'editor' | 'viewer'
-
 export interface JwtPayload {
   userId: string
   email: string
-  role: UserRole
 }
 
 export interface RegisterBody {

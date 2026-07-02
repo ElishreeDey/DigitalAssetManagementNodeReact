@@ -27,6 +27,9 @@ export type AssetItem = {
   renditions: VideoRendition[]
   downloadCount: number
   createdAt: string
+  uploadedBy?: string
+  teamId?: string
+  teamName?: string
 }
 
 // One row in the upload queue shown by UploadZone before/during upload
@@ -34,5 +37,5 @@ export type UploadFileState = {
   file: File
   progress: number
   error: string | null
-  preview: string | null // object URL, image files only
+  preview: string | null // object URL
 }

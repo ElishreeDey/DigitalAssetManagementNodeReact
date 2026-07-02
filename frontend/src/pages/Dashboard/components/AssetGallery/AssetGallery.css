@@ -4,6 +4,44 @@
   gap: 20px;
 }
 
+/* Toggle between (My Assets / Team Assets) */
+.gallery-source-toggle {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  width: fit-content;
+}
+
+.source-tab {
+  border: none;
+  height: 30px;
+  padding: 0 16px;
+  border-radius: 6px;
+  background: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.source-tab:hover {
+  color: var(--text-primary);
+}
+
+.source-tab--active {
+  background: var(--primary-dark);
+  color: #fff;
+}
+
 /* Toolbar */
 .gallery-toolbar {
   display: flex;
@@ -49,9 +87,9 @@
   height: 30px;
   padding: 0 16px;
   border-radius: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -59,7 +97,7 @@
 }
 
 .gallery-tab--active {
-  background: var(--primary);
+  background: var(--primary-dark);
   color: #fff;
 }
 
@@ -79,8 +117,7 @@
   border: 1.5px solid var(--border);
   border-radius: 8px;
   font-size: 13px;
-
-  color: var(--text-muted);
+  color: var(--text-secondary);
   background: var(--white);
   outline: none;
   cursor: pointer;
@@ -147,8 +184,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  color: var(--text-muted);
+}
+
+.asset-card-placeholder img {
+  width: 32px;
+  height: 32px;
 }
 
 .asset-status {
@@ -163,6 +203,24 @@
   border-radius: 999px;
   background: rgba(245, 158, 11, 0.15);
   color: #d97706;
+}
+
+.show-asset-team-name {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  max-width: calc(100% - 16px);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .asset-status--failed {

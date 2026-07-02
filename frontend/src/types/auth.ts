@@ -10,12 +10,15 @@
 import type { ChangeEvent, SyntheticEvent } from 'react'
 
 /* Authenticated user */
-export type UserRole = 'admin' | 'editor' | 'viewer'
-
 export type AuthUser = {
   userId: string
   email: string
-  role: UserRole
+}
+
+/* Bare id and email from the registered account (e.g. to pick "add team member" while adding a team member) */
+export type Account = {
+  id: string
+  email: string
 }
 
 /* Login */

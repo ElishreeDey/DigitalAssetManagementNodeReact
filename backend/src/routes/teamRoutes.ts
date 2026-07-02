@@ -16,12 +16,14 @@ import {
   addMember,
   removeMember,
   deleteTeam,
+  updateTeam,
 } from '../controllers'
 
-const router = express.Router()
+const router = express.Router() // Router() is a built-in function provided by the Express framework.
 
 router.post('/', authMiddleware, createTeam)
 router.get('/', authMiddleware, listTeams)
+router.patch('/:id', authMiddleware, updateTeam)
 router.delete('/:id', authMiddleware, deleteTeam)
 router.get('/:id/members', authMiddleware, listMembers)
 router.post('/:id/members', authMiddleware, addMember)

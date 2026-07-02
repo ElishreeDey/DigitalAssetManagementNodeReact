@@ -310,7 +310,7 @@ export const deleteAsset = async (
   }
 }
 
-// Shares an asset with a team or an individual user. Only the asset owner can do this.
+// Shares an asset with a team.
 // POST /assets/:id/share
 export const shareAsset = async (
   req: Request<IdParams>,
@@ -361,6 +361,7 @@ export const shareAsset = async (
 
     res.status(201).json(share)
   } catch (error) {
+    console.error('[shareAsset]', error)
     ;(error as Error).message = MESSAGES.ASSET_SHARE_CREATE_FAILED_MSG
     next(error)
   }

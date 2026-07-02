@@ -7,6 +7,7 @@
  ****************************************************************************************************************************
  */
 
+// All controllers for Application User authentication
 export {
   register,
   login,
@@ -15,6 +16,7 @@ export {
   listAccounts,
 } from './authController'
 
+// All controller names for Asset
 export {
   uploadMiddleware,
   uploadAssets,
@@ -30,6 +32,7 @@ export {
   updateSharePermission,
 } from './assetController'
 
+// All controller names for Team
 export {
   createTeam,
   listTeams,
@@ -37,4 +40,5 @@ export {
   addMember,
   removeMember,
   deleteTeam,
+  updateTeam,
 } from './teamController'

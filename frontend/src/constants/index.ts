@@ -1,7 +1,7 @@
 /*
  ****************************************************************************************************************************
  * Filename    : index
- * Description : Barrel — re-exports all frontend constants.
+ * Description : Barrel index all frontend constants.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-15
  ****************************************************************************************************************************
@@ -9,3 +9,4 @@
 
 export * from './auth'
 export * from './assets'
+export * from './teams'

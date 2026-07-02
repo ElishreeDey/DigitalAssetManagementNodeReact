@@ -1,0 +1,206 @@
+.teams-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Create team form */
+.team-create-form {
+  display: flex;
+  gap: 10px;
+}
+
+.team-create-input {
+  flex: 1;
+  max-width: 320px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.team-create-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Status messages */
+.teams-status {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.teams-status--error {
+  color: var(--error);
+}
+
+/* Team list */
+.teams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.team-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+}
+
+.team-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.team-card-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.team-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.team-card-edit,
+.team-card-delete {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.team-card-edit img,
+.team-card-delete img {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.team-card-edit:hover,
+.team-card-delete:hover {
+  opacity: 1;
+}
+
+/* Inline team name edit */
+.team-name-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.team-name-edit-input {
+  flex: 1;
+  max-width: 260px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--white);
+  border: 1.5px solid var(--primary);
+  border-radius: 7px;
+  outline: none;
+}
+
+.team-name-edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.team-name-edit-cancel {
+  color: var(--text-muted);
+}
+
+.team-card-down-arr {
+  display: flex;
+  align-items: center;
+}
+
+.team-card-down-arr img {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+/* Expanded body */
+.team-card-body {
+  padding: 0 20px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.team-member-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 0;
+}
+
+.team-member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.team-member-email {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.team-member-role {
+  font-size: 11px;
+  text-transform: capitalize;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.team-add-member-form {
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.team-add-member-input {
+  flex: 1;
+  max-width: 280px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--white);
+}
+
+.team-add-member-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Save, Cancel, Add, Remove button size */
+.teams-page .btn-text {
+  font-size: 11px;
+}

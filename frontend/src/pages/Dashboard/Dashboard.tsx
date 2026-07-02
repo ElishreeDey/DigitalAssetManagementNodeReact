@@ -1,24 +1,29 @@
 /*
  ****************************************************************************************************************************
  * Filename    : Dashboard
- * Description : Main DAM dashboard containing asset management, upload, and user account views.
+ * Description : Main DAM dashboard containing asset management, upload, and user account views, team creation.
  * Author      : Elishree Dey Chand
  * Created     : 2026-06-17
  ****************************************************************************************************************************
  */
 
-import { useState, useEffect } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { authService } from '../../services'
 import { damLogo, assetsIcon, uploadIcon, collectionsIcon } from '../../assets'
 import type { AuthUser, AssetItem } from '../../types'
-import { useAssets } from '../../hooks'
-import UploadZone from './components/UploadZone/UploadZone'
+import { useAssets } from '../../hooks/useAssets'
 import AssetGallery from './components/AssetGallery/AssetGallery'
-import AssetPreview from './components/AssetPreview/AssetPreview'
 import './Dashboard.css'
+
+const Teams = lazy(() => import('./components/Teams/Teams'))
+const UploadZone = lazy(() => import('./components/UploadZone/UploadZone'))
+const AssetPreview = lazy(
+  () => import('./components/AssetPreview/AssetPreview')
+)
 
 type DashboardProps = {
   onLogout: () => void
+  initialUser: AuthUser | null
 }
 
 type NavKey = 'assets' | 'upload' | 'teams'
@@ -35,27 +40,24 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'teams', label: 'Teams', iconSrc: collectionsIcon },
 ]
 
-export default function Dashboard({ onLogout }: DashboardProps) {
-  const [user, setUser] = useState<AuthUser | null>(null)
+export default function Dashboard({ onLogout, initialUser }: DashboardProps) {
+  const [user] = useState<AuthUser | null>(initialUser)
   const [activeNav, setActiveNav] = useState<NavKey>('assets')
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [previewAsset, setPreviewAsset] = useState<AssetItem | null>(null)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [sortOrder, setSortOrder] = useState<
+    'asc' | 'desc' | 'size-asc' | 'size-desc'
+  >('desc')
+  const [assetSource, setAssetSource] = useState<'mine' | 'shared'>('mine')
 
   const { assets, isLoading, error, addAssets, removeAsset } = useAssets(
     search,
     typeFilter,
-    sortOrder
+    sortOrder,
+    assetSource
   )
-
-  useEffect(() => {
-    authService
-      .curLoggedInUser()
-      .then(setUser)
-      .catch(() => onLogout()) // redirect to login if the cookie has expired
-  }, [onLogout])
 
   async function handleLogout() {
     setIsLoggingOut(true)
@@ -82,7 +84,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
   return (
     <div className="dashboard-layout">
-      {/* ── Sidebar ─────────────────────────────────────────────── */}
+      {/* Dashboard Sidebar */}
       <aside className="sidebar">
         {/* Logo */}
         <div className="sidebar-logo">
@@ -123,7 +125,6 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               <p className="user-email" title={user?.email ?? ''}>
                 {user?.email ?? '…'}
               </p>
-              <p className="user-role">{user?.role ?? ''}</p>
             </div>
           </div>
 
@@ -138,7 +139,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────────── */}
+      {/* Dashboard Main Content Area */}
       <div className="dashboard-main">
         {/* Top bar */}
         <header className="topbar">
@@ -152,7 +153,11 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
         {/* Scrollable content area */}
         <main className="content-area">
-          {activeNav === 'upload' && <UploadZone onUploaded={handleUploaded} />}
+          {activeNav === 'upload' && (
+            <Suspense fallback={null}>
+              <UploadZone onUploaded={handleUploaded} />
+            </Suspense>
+          )}
 
           {activeNav === 'assets' && (
             <AssetGallery
@@ -167,21 +172,28 @@ export default function Dashboard({ onLogout }: DashboardProps) {
               onTypeChange={setTypeFilter}
               sortOrder={sortOrder}
               onSortChange={setSortOrder}
+              source={assetSource}
+              onSourceChange={setAssetSource}
+              currentUserId={user?.userId}
             />
           )}
 
           {activeNav === 'teams' && (
-            <div className="coming-soon">
-              <p>Teams coming soon.</p>
-            </div>
+            <Suspense fallback={null}>
+              <Teams currentUserId={user?.userId} />
+            </Suspense>
           )}
         </main>
       </div>
 
-      <AssetPreview
-        asset={previewAsset}
-        onClose={() => setPreviewAsset(null)}
-      />
+      {previewAsset && (
+        <Suspense fallback={null}>
+          <AssetPreview
+            asset={previewAsset}
+            onClose={() => setPreviewAsset(null)}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }

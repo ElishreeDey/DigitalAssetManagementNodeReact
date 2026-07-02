@@ -9,8 +9,8 @@
  */
 
 import { useRef, useState } from 'react'
-import { useUpload } from '../../../../hooks'
-import { uploadIcon } from '../../../../assets'
+import { useUpload, useTeams } from '../../../../hooks'
+import { uploadIcon, pdfIcon, playIcon, removeIcon } from '../../../../assets'
 import type { AssetItem } from '../../../../types'
 import './UploadZone.css'
 
@@ -19,7 +19,9 @@ type Props = {
 }
 
 export default function UploadZone({ onUploaded }: Props) {
+  const { teams } = useTeams()
   const [isDragging, setIsDragging] = useState(false)
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
   const {
     files,
@@ -30,7 +32,7 @@ export default function UploadZone({ onUploaded }: Props) {
     removeFile,
     upload,
     clear,
-  } = useUpload(onUploaded)
+  } = useUpload(onUploaded, selectedTeamId || undefined)
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -49,8 +51,39 @@ export default function UploadZone({ onUploaded }: Props) {
     return `${(b / (1024 * 1024)).toFixed(1)} MB`
   }
 
+  const selectedTeam = teams.find((t) => t.id === selectedTeamId)
+
+  const uploadLabel = isUploading
+    ? 'Uploading…'
+    : selectedTeam
+      ? `Upload ${validCount} file${validCount !== 1 ? 's' : ''} to ${selectedTeam.name}`
+      : `Upload ${validCount} file${validCount !== 1 ? 's' : ''}`
+
   return (
     <div className="upload-page">
+      {teams.length > 0 && (
+        <div className="upload-team-selector">
+          <label htmlFor="upload-team" className="upload-team-label">
+            Upload to
+          </label>
+
+          {/* Dropdown to choose upload assets specific to any related team only or personal only */}
+          <select
+            id="upload-team"
+            className="upload-team-select"
+            value={selectedTeamId}
+            onChange={(e) => setSelectedTeamId(e.target.value)}
+          >
+            <option value="">My Personal Assets</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div
         className={`drop-zone${isDragging ? ' drop-zone--active' : ''}`}
         onDrop={handleDrop}
@@ -114,9 +147,13 @@ export default function UploadZone({ onUploaded }: Props) {
                 {f.preview ? (
                   <img src={f.preview} alt="" className="queue-thumb" />
                 ) : f.file.type === 'application/pdf' ? (
-                  <div className="queue-thumb queue-thumb--pdf">📄</div>
+                  <div className="queue-thumb queue-thumb--pdf">
+                    <img src={pdfIcon} alt="" />
+                  </div>
                 ) : (
-                  <div className="queue-thumb queue-thumb--video">▶</div>
+                  <div className="queue-thumb queue-thumb--video">
+                    <img src={playIcon} alt="" />
+                  </div>
                 )}
                 <div className="queue-meta">
                   <span className="queue-name">{f.file.name}</span>
@@ -140,7 +177,7 @@ export default function UploadZone({ onUploaded }: Props) {
                   onClick={() => removeFile(i)}
                   aria-label={`Remove ${f.file.name}`}
                 >
-                  ×
+                  <img src={removeIcon} alt="" />
                 </button>
               </li>
             ))}
@@ -148,15 +185,16 @@ export default function UploadZone({ onUploaded }: Props) {
 
           <div className="queue-actions">
             {uploadError && <p className="queue-upload-error">{uploadError}</p>}
+
+            {/* upload button name will be "Uploading" when personal upload */}
+            {/* upload button name will be "Upload"+Team name when specific to team */}
             <button
               type="button"
               className="btn-upload"
               onClick={upload}
               disabled={isUploading || validCount === 0}
             >
-              {isUploading
-                ? 'Uploading…'
-                : `Upload ${validCount} file${validCount !== 1 ? 's' : ''}`}
+              {uploadLabel}
             </button>
           </div>
         </div>

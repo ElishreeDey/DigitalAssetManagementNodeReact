@@ -7,7 +7,7 @@
  ****************************************************************************************************************************
  */
 
-import sequelize from '../config'
+import sequelize from '../config' //use the same single sequelize instance defined already in config
 import { Team, TeamMember, AuthUser, AssetShare } from '../models'
 import type { TeamMemberRole } from '../types'
 
@@ -26,7 +26,16 @@ export class TeamRepository {
 
   //get one team by its teamID
   async findById(id: string): Promise<Team | null> {
-    return Team.findByPk(id)
+    return Team.findByPk(id) //Team class is a Sequelize Model we defined in teamModels.ts "teams" table, and it calls a predefined Sequelize method 'findByPk'.
+  }
+
+  // update Team Name
+  async updateName(teamId: string, name: string): Promise<Team | null> {
+    const team = await Team.findByPk(teamId)
+    if (!team) return null
+    team.name = name
+    await team.save()
+    return team
   }
 
   // For cur UserID it will tell Teams the current user belongs to.

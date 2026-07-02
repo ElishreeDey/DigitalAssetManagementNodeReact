@@ -7,9 +7,14 @@
  ****************************************************************************************************************************
  */
 
+import { useState } from 'react'
 import { assetUrl } from '../../../../constants'
+import { trashIcon, downloadIcon, pdfIcon, playIcon } from '../../../../assets'
+import { ConfirmModal } from '../../../../components'
 import type { AssetItem } from '../../../../types'
 import './AssetGallery.css'
+
+type AssetSource = 'mine' | 'shared'
 
 type Props = {
   assets: AssetItem[]
@@ -21,8 +26,11 @@ type Props = {
   onSearchChange: (value: string) => void
   typeFilter: string
   onTypeChange: (value: string) => void
-  sortOrder: 'asc' | 'desc'
-  onSortChange: (value: 'asc' | 'desc') => void
+  sortOrder: 'asc' | 'desc' | 'size-asc' | 'size-desc'
+  onSortChange: (value: 'asc' | 'desc' | 'size-asc' | 'size-desc') => void
+  source: AssetSource
+  onSourceChange: (source: AssetSource) => void
+  currentUserId?: string
 }
 
 const TYPE_TABS = [
@@ -44,7 +52,12 @@ export default function AssetGallery({
   onTypeChange,
   sortOrder,
   onSortChange,
+  source,
+  onSourceChange,
+  currentUserId,
 }: Props) {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+
   function formatBytes(b: number) {
     if (b < 1024) return `${b} B`
     if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`
@@ -53,6 +66,24 @@ export default function AssetGallery({
 
   return (
     <div className="gallery-page">
+      {/* Assest gallery toggle based on all personal assets or team assets */}
+      <div className="gallery-source-toggle">
+        <button
+          type="button"
+          className={`source-tab${source === 'mine' ? ' source-tab--active' : ''}`}
+          onClick={() => onSourceChange('mine')}
+        >
+          My Assets
+        </button>
+        <button
+          type="button"
+          className={`source-tab${source === 'shared' ? ' source-tab--active' : ''}`}
+          onClick={() => onSourceChange('shared')}
+        >
+          Team Assets
+        </button>
+      </div>
+
       <div className="gallery-toolbar">
         {/* search by tags or filename */}
         <input
@@ -83,11 +114,17 @@ export default function AssetGallery({
           <select
             className="gallery-sort"
             value={sortOrder}
-            onChange={(e) => onSortChange(e.target.value as 'asc' | 'desc')}
-            aria-label="Sort by upload date"
+            onChange={(e) =>
+              onSortChange(
+                e.target.value as 'asc' | 'desc' | 'size-asc' | 'size-desc'
+              )
+            }
+            aria-label="Sort assets"
           >
             <option value="desc">Newest first</option>
             <option value="asc">Oldest first</option>
+            <option value="size-desc">Size- big to small</option>
+            <option value="size-asc">Size- small to big</option>
           </select>
         </label>
       </div>
@@ -96,7 +133,9 @@ export default function AssetGallery({
       {error && <p className="gallery-status gallery-status--error">{error}</p>}
       {!isLoading && !error && assets.length === 0 && (
         <p className="gallery-status">
-          No assets yet — upload your first file.
+          {source === 'shared'
+            ? 'No team assets yet — ask a team member to upload files to your team.'
+            : 'No assets yet — upload your first file.'}
         </p>
       )}
 
@@ -108,13 +147,17 @@ export default function AssetGallery({
               (asset.mimeType.startsWith('video/') ||
                 asset.mimeType === 'application/pdf') ? (
                 <div className="asset-card-placeholder">
-                  {asset.mimeType === 'application/pdf' ? '📄' : '▶'}
+                  <img
+                    src={
+                      asset.mimeType === 'application/pdf' ? pdfIcon : playIcon
+                    }
+                    alt=""
+                  />
                 </div>
               ) : (
                 <img
                   src={assetUrl.thumbnail(asset.id)}
                   alt={asset.originalName}
-                  loading="lazy"
                 />
               )}
               {asset.status !== 'ready' && (
@@ -122,27 +165,34 @@ export default function AssetGallery({
                   {asset.status}
                 </span>
               )}
+              {source === 'shared' && asset.teamName && (
+                <span className="show-asset-team-name">{asset.teamName}</span>
+              )}
               <div className="asset-card-overlay">
                 <a
                   href={assetUrl.download(asset.id)}
                   className="asset-card-action"
+                  data-tooltip="Download"
                   download
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Download"
                 >
-                  ⬇
+                  <img src={downloadIcon} alt="" width={16} height={16} />
                 </a>
-                <button
-                  type="button"
-                  className="asset-card-action"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(asset.id)
-                  }}
-                  aria-label="Delete"
-                >
-                  🗑
-                </button>
+                {asset.uploadedBy === currentUserId && (
+                  <button
+                    type="button"
+                    className="asset-card-action"
+                    data-tooltip="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setPendingDeleteId(asset.id)
+                    }}
+                    aria-label="Delete"
+                  >
+                    <img src={trashIcon} alt="" width={16} height={16} />
+                  </button>
+                )}
               </div>
             </div>
             <div className="asset-card-meta">
@@ -154,6 +204,17 @@ export default function AssetGallery({
           </div>
         ))}
       </div>
+
+      {pendingDeleteId && (
+        <ConfirmModal
+          message="Are you sure you want to delete this asset? This action cannot be undone."
+          onConfirm={() => {
+            onDelete(pendingDeleteId)
+            setPendingDeleteId(null)
+          }}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   )
 }

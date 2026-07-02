@@ -25,7 +25,7 @@ export const AUTH_ERRORS = {
 } as const
 
 export const AUTH_TOAST = {
-  LOGIN_SUCCESS: 'Login successful! Redirecting…',
+  LOGIN_SUCCESS: 'Login successful…',
   REGISTER_SUCCESS: 'Account created! Please sign in.',
 } as const
 
@@ -34,4 +34,5 @@ export const AUTH_ENDPOINTS = {
   REGISTER: '/register',
   LOGOUT: '/logout',
   ME: '/curLoggedInUser',
+  ACCOUNTS: '/accounts',
 } as const

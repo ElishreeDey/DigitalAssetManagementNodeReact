@@ -225,3 +225,42 @@ export const deleteTeam = async (
     next(error)
   }
 }
+
+// Only the team owner can rename the team.
+// PATCH /teams/:id
+export const updateTeam = async (
+  req: Request<TeamIdParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id: teamId } = req.params
+    const { name } = req.body as { name?: string }
+
+    if (!name?.trim()) {
+      return res.status(400).json({ message: MESSAGES.TEAM_NAME_REQUIRED_MSG })
+    }
+
+    const team = await teamRepository.findById(teamId)
+    if (!team) {
+      return res.status(404).json({ message: MESSAGES.TEAM_NOT_FOUND_MSG })
+    }
+
+    const membership = await teamRepository.findMembership(
+      teamId,
+      req.user!.userId
+    )
+
+    //here it check if login user is team owner or not. if not show error can't modify team name.
+    if (!membership || membership.role !== 'owner') {
+      return res.status(403).json({ message: MESSAGES.TEAM_OWNER_ONLY_MSG })
+    }
+
+    // here update team name
+    const updated = await teamRepository.updateName(teamId, name.trim())
+    res.status(200).json(updated)
+  } catch (error) {
+    ;(error as Error).message = MESSAGES.TEAM_UPDATE_FAILED_MSG
+    next(error)
+  }
+}

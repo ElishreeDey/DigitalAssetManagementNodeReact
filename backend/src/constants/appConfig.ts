@@ -25,7 +25,8 @@ export const COOKIE_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 1 day
 // Caps the JSON body size so oversized payloads are rejected before parsing.
 export const JSON_BODY_LIMIT = '10kb'
 
-export const CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
+// API routes GET, POST, PATCH, and DELETE
+export const CORS_METHODS = ['GET', 'POST', 'PATCH', 'DELETE']
 
 // API versioning
 export const API_PREFIX = '/api/v1'

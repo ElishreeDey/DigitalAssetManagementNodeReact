@@ -8,7 +8,6 @@
  */
 
 import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
-import axios from 'axios'
 import { toast } from 'react-toastify'
 import { authService } from '../services'
 import { validateRegisterForm } from '../utils'
@@ -59,13 +58,11 @@ export function useRegisterForm(onSuccess: () => void): UseRegisterFormReturn {
       toast.success(AUTH_TOAST.REGISTER_SUCCESS)
       onSuccess()
     } catch (err) {
-      // Prefer API error messages when available.
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? (err.response.data.message as string)
-          : AUTH_ERRORS.REGISTER_FAILED
-
-      setServerError(message)
+      const apiMsg = (err as { response?: { data?: { message?: unknown } } })
+        .response?.data?.message
+      setServerError(
+        typeof apiMsg === 'string' ? apiMsg : AUTH_ERRORS.REGISTER_FAILED
+      )
     } finally {
       setIsLoading(false)
     }

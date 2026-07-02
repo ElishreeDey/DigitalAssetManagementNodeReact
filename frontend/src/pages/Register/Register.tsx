@@ -8,7 +8,7 @@
  */
 
 import { useRegisterForm } from '../../hooks'
-import { eyeIcon, eyeOffIcon } from '../../assets'
+import { eyeIcon, eyeOffIcon, warningIcon } from '../../assets'
 import './Register.css'
 
 type RegisterProps = {
@@ -56,7 +56,11 @@ export default function Register({
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           {serverError && (
             <div className="login-global-error" role="alert">
-              <span className="login-global-error-icon">⚠️</span>
+              <img
+                src={warningIcon}
+                alt=""
+                className="login-global-error-icon"
+              />
               {serverError}
             </div>
           )}

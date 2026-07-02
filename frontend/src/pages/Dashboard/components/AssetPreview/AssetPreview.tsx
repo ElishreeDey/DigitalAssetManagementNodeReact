@@ -9,6 +9,7 @@
 
 import { useEffect } from 'react'
 import { assetUrl } from '../../../../constants'
+import { pdfIcon, closeIcon } from '../../../../assets'
 import type { AssetItem } from '../../../../types'
 import './AssetPreview.css'
 
@@ -41,7 +42,7 @@ export default function AssetPreview({ asset, onClose }: Props) {
           onClick={onClose}
           aria-label="Close"
         >
-          ×
+          <img src={closeIcon} alt="" />
         </button>
 
         <div className="preview-media">
@@ -61,7 +62,7 @@ export default function AssetPreview({ asset, onClose }: Props) {
           )}
           {!isImage && !isVideo && (
             <div className="preview-no-media">
-              <span className="preview-file-icon">📄</span>
+              <img src={pdfIcon} alt="" className="preview-file-icon" />
               <p>No preview available</p>
             </div>
           )}
